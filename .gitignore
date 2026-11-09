@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.env.*
+
+# Node
+node_modules/
+dist/
+
+# Frappe
+sites/*/private/
+sites/*/public/files/
+*.sql
+*.sql.gz
+site_config.json
+logs/
+
+# Local tools
+.claude/settings.local.json
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Data exports must never be committed
+data/raw/
+*.xlsx
+*.csv
+!docs/**/*.csv
