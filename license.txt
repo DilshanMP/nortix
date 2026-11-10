@@ -1,0 +1,9 @@
+Copyright (c) 2026 Pasindu Dilshan. All rights reserved.
+
+This software and its documentation are proprietary and confidential.
+No part of it may be copied, modified, distributed, sublicensed or used
+except under a written agreement with the copyright holder.
+
+This software runs on Frappe Framework (MIT licence), ERPNext and Frappe HR
+(GNU General Public License v3). Those works remain under their own licences
+and are not covered by this notice.

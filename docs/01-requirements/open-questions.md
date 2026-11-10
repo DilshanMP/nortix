@@ -16,7 +16,7 @@ updated: 2026-11-09
 | D6 | Second admin and backup key holder | Management | R1 go-live | |
 | D7 | Product name: Nortix chosen 2026-11-09. Web searches found the name in use elsewhere, including NortixLabs (software and SaaS), Nortix Informática (Brazil, IT) and Nortix Launcher (games). Domain, WIPO and NIPO checks required before public launch; customer sites use their own brand (ADR-0006) | Product owner | Public launch | Nortix |
 | D9 | Customer brand for Akvora Group (proposal: "Akvora One") | Management | R1 go-live | |
-| D8 | IP ownership and licensing of the product (built at Akvora, offered to others); GPL-3.0 obligations of ERPNext/Frappe HR | Management, legal | Offering to other companies; publishing code | |
+| D8 | IP ownership and licensing of the product (built at Akvora, offered to others); GPL-3.0 obligations of ERPNext/Frappe HR | Management, legal | Offering to other companies; publishing code | 2026-11-10, product owner: the `nortix` app is proprietary, copyright Pasindu Dilshan (`license.txt`). Frappe is MIT; ERPNext and Frappe HR are GPL-3.0. Legal review of GPL obligations and of the ownership agreement with Akvora is still required before the first contract with another company |
 | Q1 | Annual leave: Permanent status required in addition to the 1-year mark? | HR | LV-006 | |
 | Q2 | Carry forward of unused leave? | HR | LV-002 | |
 | Q3 | Casual leave: monthly accrual or up front? | HR | LV-003 | |

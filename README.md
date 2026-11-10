@@ -46,6 +46,8 @@ A department-organised business platform for multi-company organisations, built 
 
 Follow [docs/09-delivery/getting-started.md](docs/09-delivery/getting-started.md).
 
-## Ownership
+## Ownership and licence
 
 Product owner and lead engineer: Pasindu Dilshan.
+
+The `nortix` app is proprietary; see `license.txt` and decision D8 in `docs/01-requirements/open-questions.md`. Frappe Framework (MIT), ERPNext and Frappe HR (GPL-3.0) keep their own licences.
