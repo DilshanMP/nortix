@@ -12,10 +12,11 @@ A multi-company business platform built on Frappe Framework (version-16), Frappe
 All custom code lives in the `nortix` app. Never edit frappe, erpnext or hrms core.
 One site per customer organisation; many Companies inside a site.
 
-This kit is the engineering baseline (docs, `.claude/`, CI, pre-commit). It is copied into
-`apps/nortix/` of a bench after `bench new-app nortix` (docs/09-delivery/getting-started.md).
-Until then there is no `nortix/` code directory; keep the files `bench new-app` generates
-(`pyproject.toml`, `nortix/hooks.py`, its pre-commit hooks) and merge rather than overwrite.
+The engineering baseline (docs, `.claude/`, CI, pre-commit) sits alongside the code that
+`bench new-app nortix` generates (docs/09-delivery/getting-started.md). Keep the generated
+files (`pyproject.toml`, `nortix/hooks.py`, `nortix/modules.txt`, `nortix/patches.txt`) and
+merge rather than overwrite. `pyproject.toml` holds the ruff config that sets tab indentation;
+without it `ruff-format` reformats to spaces.
 
 ## Source of truth
 - Requirements and business rules: docs/01-requirements (IDs such as LV-004); open items in open-questions.md
@@ -66,6 +67,7 @@ lint every edited `.py`/`.json` file.
 Requirement → /analyze-requirements → /plan-feature (plan mode, engineer approves) →
 /implement-feature (tests first) → /verify-feature → /review-security and review agents.
 Full table with human gates: docs/07-ai-engineering/ai-workflow.md.
+User-invoked only: /commit-message, /devlog (entries in docs/devlog), /release-readiness.
 
 ## Before changing code
 Read the requirement, the related DocTypes, services and tests.
