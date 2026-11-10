@@ -65,3 +65,37 @@ def get_employees_with_annual_allocation(
 		)
 	).run(pluck=True)
 	return set(rows)
+
+
+def get_rule_allocation(
+	employee: str, leave_type: str, from_date, to_date, source: str
+) -> frappe._dict | None:
+	"""The submitted allocation a leave rule created for this employee and period, if any."""
+	allocation = frappe.qb.DocType("Leave Allocation")
+	rows = (
+		frappe.qb.from_(allocation)
+		.select(allocation.name, allocation.from_date, allocation.total_leaves_allocated)
+		.where(
+			(allocation.employee == employee)
+			& (allocation.leave_type == leave_type)
+			& (allocation.docstatus == 1)
+			& (allocation.nortix_source == source)
+			& (allocation.from_date <= to_date)
+			& (allocation.to_date >= from_date)
+		)
+		.limit(1)
+	).run(as_dict=True)
+	return rows[0] if rows else None
+
+
+def has_leave_adjustment(leave_allocation: str) -> bool:
+	"""Whether any Leave Adjustment, in any state, exists for the allocation."""
+	adjustment = frappe.qb.DocType("Leave Adjustment")
+	return bool(
+		(
+			frappe.qb.from_(adjustment)
+			.select(adjustment.name)
+			.where(adjustment.leave_allocation == leave_allocation)
+			.limit(1)
+		).run()
+	)

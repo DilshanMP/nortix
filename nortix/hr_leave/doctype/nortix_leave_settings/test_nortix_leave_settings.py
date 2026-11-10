@@ -9,6 +9,7 @@ from nortix.hr_leave.testing import (
 	make_leave_type,
 	make_user,
 	set_annual_settings,
+	set_leave_settings,
 )
 
 # The tests create their own Leave Types; the generated ones pull in records from apps
@@ -123,3 +124,23 @@ class TestNortixLeaveSettings(IntegrationTestCase):
 		settings = frappe._dict(annual_leave_type="_Test Nortix Missing Type", annual_full_days=14)
 		with self.assertRaisesRegex(frappe.ValidationError, "does not exist"):
 			validate_annual_leave_type(settings)
+
+	def test_leave_rule_settings_save(self):
+		set_leave_settings()
+		self.assertEqual(frappe.db.get_single_value("Nortix Leave Settings", "casual_days_after_mark"), 7)
+
+	def test_enabled_leave_rule_requires_leave_type(self):
+		with self.assertRaises(frappe.ValidationError):
+			set_leave_settings(casual_leave_type=None)
+
+	def test_medical_leave_type_must_allow_over_allocation(self):
+		with self.assertRaises(frappe.ValidationError):
+			set_leave_settings(medical_leave_type="_Test Nortix No Over Allocation")
+
+	def test_carry_forward_casual_leave_type_rejected(self):
+		with self.assertRaises(frappe.ValidationError):
+			set_leave_settings(casual_leave_type="_Test Nortix Carry Forward")
+
+	def test_negative_leave_rule_amount_rejected(self):
+		with self.assertRaises(frappe.ValidationError):
+			set_leave_settings(medical_days=-1)

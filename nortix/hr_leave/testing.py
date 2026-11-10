@@ -3,6 +3,9 @@
 import frappe
 
 ANNUAL_LEAVE_TYPE = "_Test Nortix Annual"
+CASUAL_LEAVE_TYPE = "_Test Nortix Casual"
+ADDITIONAL_LEAVE_TYPE = "_Test Nortix Additional"
+MEDICAL_LEAVE_TYPE = "_Test Nortix Medical"
 COMPANY_A = "_Test Nortix Company A"
 COMPANY_B = "_Test Nortix Company B"
 COMPANY_NO_PERIOD = "_Test Nortix Company C"
@@ -110,6 +113,30 @@ def set_annual_settings(**values) -> None:
 			"annual_q3_days": 7,
 			"annual_q4_days": 4,
 			"annual_full_days": 14,
+		}
+	)
+	settings.update(values)
+	settings.save()
+
+
+def set_leave_settings(**values) -> None:
+	"""Turn on casual, additional and medical allocation with the leave Sheet amounts."""
+	for leave_type in (CASUAL_LEAVE_TYPE, ADDITIONAL_LEAVE_TYPE, MEDICAL_LEAVE_TYPE):
+		make_leave_type(leave_type)
+	settings = frappe.get_single("Nortix Leave Settings")
+	settings.update(
+		{
+			"is_casual_allocation_enabled": 1,
+			"casual_leave_type": CASUAL_LEAVE_TYPE,
+			"casual_monthly_days_first_year": 0.5,
+			"casual_days_before_mark": 6,
+			"casual_days_after_mark": 7,
+			"is_additional_allocation_enabled": 1,
+			"additional_leave_type": ADDITIONAL_LEAVE_TYPE,
+			"additional_days_before_mark": 1,
+			"is_medical_allocation_enabled": 1,
+			"medical_leave_type": MEDICAL_LEAVE_TYPE,
+			"medical_days": 7,
 		}
 	)
 	settings.update(values)
