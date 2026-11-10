@@ -49,8 +49,9 @@ These rules are taken from the current leave Sheet. Each stays Draft until HR co
 - Mark in 2025, period 2026 → 14.
 - Employee with no join date → no annual leave; listed for HR review.
 - The daily job running twice creates one allocation.
-**Answered (leave Sheet, 2026-11-11):** Q1, Q2, Q9, Q10, Q11, Q17 (open-questions.md).
-**Still open, not blocking the calculation:** Q12 to Q16.
+- Employee with a 2026 annual allocation from the migration → the job creates no second allocation for 2026 (Q16).
+**Answered (leave Sheet, 2026-11-11):** Q1, Q2, Q9, Q10, Q11, Q17; Q16 by the product owner (open-questions.md).
+**Still open, not blocking the calculation:** Q12 to Q15.
 
 ### LV-007 Medical leave
 **Rule:** 7 days per leave period; applications need management approval.
