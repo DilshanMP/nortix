@@ -2,7 +2,7 @@
 title: "Requirements Register"
 status: "Draft"
 owner: Pasindu Dilshan
-updated: 2026-11-11
+updated: 2026-11-12
 ---
 
 # Requirements Register
@@ -13,23 +13,23 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 
 | ID | Title | Status | Owner to confirm |
 | --- | --- | --- | --- |
-| LV-001 | Leave types | Draft | HR |
-| LV-002 | Leave period is the calendar year | Draft | HR |
-| LV-003 | Casual leave before the 1-year mark | Draft | HR |
-| LV-004 | Casual leave after the 1-year mark | Draft | HR |
-| LV-005 | Additional leave before the 1-year mark | Draft | HR |
+| LV-001 | Leave types | Confirmed | HR |
+| LV-002 | Leave period is the calendar year | Confirmed | HR |
+| LV-003 | Casual leave before the 1-year mark | Confirmed | HR |
+| LV-004 | Casual leave after the 1-year mark | Confirmed | HR |
+| LV-005 | Additional leave before the 1-year mark | Confirmed | HR |
 | LV-006 | Annual leave by quarter of the 1-year mark | Built | HR |
-| LV-007 | Medical leave | Draft | HR, Management |
-| LV-008 | Leave balance calculation | Draft | HR |
-| LV-009 | Application and approval flow | Draft | HR |
-| LV-010 | Low and critical balance alerts | Draft | HR |
-| LV-011 | Rules configurable per customer | Draft | Product owner |
-| LV-012 | Company and branch isolation | Draft | Product owner |
-| LV-013 | Migration from the leave Sheet | Draft | HR |
+| LV-007 | Medical leave | Confirmed | HR, Management |
+| LV-008 | Leave balance calculation | Confirmed | HR |
+| LV-009 | Application and approval flow | Confirmed | HR |
+| LV-010 | Low and critical balance alerts | Confirmed | HR |
+| LV-011 | Rules configurable per customer | Confirmed | Product owner |
+| LV-012 | Company and branch isolation | Confirmed | Product owner |
+| LV-013 | Migration from the leave Sheet | Confirmed | HR |
 
 Details and acceptance criteria: [leave-rules.md](leave-rules.md).
 
-LV-006 confirmed 2026-11-11 by the product owner, following the current leave Sheet policy (open-questions.md Q1, Q2, Q9 to Q11, Q17).
+LV-006 confirmed 2026-11-11 and the other R1 leave rules confirmed 2026-11-12 by the product owner, following the current leave Sheet policy; sources for each answer are in leave-rules.md and open-questions.md.
 
 ## Later releases (not started)
 
