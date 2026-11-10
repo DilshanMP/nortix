@@ -38,6 +38,7 @@ These rules are taken from the current leave Sheet. Each stays Draft until HR co
 **Acceptance:** Allocation stops at the mark; days already taken remain recorded.
 
 ### LV-006 Annual leave by quarter of the 1-year mark
+**Status:** Confirmed 2026-11-11 by the product owner (leave Sheet policy).
 **Rule:** The 1-year mark is the join date plus 12 months (the anniversary; a 29 Feb join date gives 28 Feb). From the mark date, annual leave for that period is set by the quarter the mark falls in: Jan to Mar 14, Apr to Jun 10, Jul to Sep 7, Oct to Dec 4. Before the mark date there is no annual leave. In later periods: 14. Permanent status is not required (Q1).
 **Acceptance:**
 - Mark 2026-11-01 → 4 days in 2026 (AKINT-022 case).
