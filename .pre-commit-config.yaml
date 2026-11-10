@@ -1,4 +1,5 @@
-exclude: 'node_modules|.git'
+# Anchored so .github/ is still checked; an unanchored '.git' also matches '.github'.
+exclude: '^(node_modules|\.git)/'
 default_stages: [pre-commit]
 fail_fast: false
 
