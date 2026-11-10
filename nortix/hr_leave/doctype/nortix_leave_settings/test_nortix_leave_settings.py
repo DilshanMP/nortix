@@ -17,7 +17,7 @@ IGNORE_TEST_RECORD_DEPENDENCIES = ["Leave Type"]
 
 
 class TestNortixLeaveSettings(IntegrationTestCase):
-	"""LV-006, LV-011: annual leave values are validated settings, changed only by HR managers."""
+	"""LV-006, LV-011: annual leave values are validated settings that only System Manager can change."""
 
 	@classmethod
 	def setUpClass(cls):
@@ -25,6 +25,7 @@ class TestNortixLeaveSettings(IntegrationTestCase):
 		make_leave_type()
 		make_leave_type("_Test Nortix No Over Allocation", allow_over_allocation=0)
 		make_leave_type("_Test Nortix Carry Forward", is_carry_forward=1)
+		make_leave_type("_Test Nortix Earned", is_earned_leave=1, allow_over_allocation=1)
 
 	def tearDown(self):
 		frappe.set_user("Administrator")
@@ -40,6 +41,14 @@ class TestNortixLeaveSettings(IntegrationTestCase):
 	def test_amount_over_a_year_rejected(self):
 		with self.assertRaises(frappe.ValidationError):
 			set_annual_settings(annual_full_days=367)
+
+	def test_amount_boundaries_accepted(self):
+		set_annual_settings(annual_full_days=366, annual_q4_days=0)
+		self.assertEqual(frappe.db.get_single_value("Nortix Leave Settings", "annual_full_days"), 366)
+
+	def test_earned_leave_type_rejected(self):
+		with self.assertRaises(frappe.ValidationError):
+			set_annual_settings(annual_leave_type="_Test Nortix Earned")
 
 	def test_enabled_requires_annual_leave_type(self):
 		with self.assertRaises(frappe.ValidationError):
@@ -74,6 +83,8 @@ class TestNortixLeaveSettings(IntegrationTestCase):
 		frappe.set_user(make_user("nortix.settings.hruser@example.com", ["HR User", "Employee"]))
 		self.assertTrue(frappe.has_permission("Nortix Leave Settings", "read"))
 		self.assertFalse(frappe.has_permission("Nortix Leave Settings", "write"))
+		with self.assertRaises(frappe.PermissionError):
+			set_annual_settings(annual_q1_days=15)
 
 	def test_company_hr_manager_cannot_change_settings(self):
 		# The settings apply to every company on the site, so an HR Manager limited to one

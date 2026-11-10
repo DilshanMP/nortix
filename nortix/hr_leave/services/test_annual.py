@@ -71,6 +71,11 @@ class TestAnnualEntitlement(UnitTestCase):
 		result = get_annual_entitlement("2024-02-29", "2025-01-01", "2025-12-31", "2025-02-28", settings())
 		self.assertEqual((result.from_date, result.days), (date(2025, 2, 28), 14))
 
+	def test_29_feb_joiner_has_nothing_on_27_feb(self):
+		self.assertIsNone(
+			get_annual_entitlement("2024-02-29", "2025-01-01", "2025-12-31", "2025-02-27", settings())
+		)
+
 	def test_later_period_gets_full_days_from_period_start(self):
 		result = entitlement("2024-11-01", on_date="2026-01-01")
 		self.assertEqual((result.from_date, result.days), (date(2026, 1, 1), 14))
