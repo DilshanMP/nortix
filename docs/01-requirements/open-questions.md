@@ -32,5 +32,5 @@ updated: 2026-11-11
 | Q13 | When an employee moves between companies in the group, does the 1-year mark run from the first join date or from the join date at the new company? | HR | LV-003 to LV-006 | |
 | Q14 | Is annual leave pro-rated in the year an employee leaves? Does a rehired employee start a new 1-year mark? | HR | LV-006 | |
 | Q15 | When a join or confirmation date is corrected after an allocation exists, should the system flag the allocation for HR to correct, or cancel and re-allocate automatically? | HR, Product owner | LV-003 to LV-006, LV-013 | |
-| Q16 | When the daily allocation job finds a 2026 annual allocation created by the migration, does it skip that employee for 2026? | Product owner | LV-006, LV-013 | |
+| Q16 | When the daily allocation job finds a 2026 annual allocation created by the migration, does it skip that employee for 2026? | Product owner | LV-006, LV-013 | 2026-11-11, product owner: yes. The job creates no annual allocation for an employee and period that already has one from the migration |
 | Q17 | Can "mark not yet reached → 0" be stated as "on any date before the mark, the employee has no annual allocation for that period"? | HR | LV-006 | 2026-11-11, leave Sheet: yes (see Q11) |
