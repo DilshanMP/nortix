@@ -4,7 +4,7 @@ LV-002,Leave period,Confirmed,,,,
 LV-003,Casual before 1-year mark,Confirmed,,,,
 LV-004,Casual after 1-year mark,Confirmed,,,,
 LV-005,Additional before 1-year mark,Confirmed,,,,
-LV-006,Annual by quarter of 1-year mark,Built,ADR-0004,nortix/hr_leave/services/annual.py;nortix/hr_leave/tasks.py;nortix/hr_leave/doctype/nortix_leave_settings,nortix/hr_leave/services/test_annual.py;nortix/hr_leave/services/test_annual_job.py;nortix/hr_leave/doctype/nortix_leave_settings/test_nortix_leave_settings.py,docs/testing/evidence/LV-006/2026-11-11-test-run.md
+LV-006,Annual by quarter of 1-year mark,Verified,ADR-0004,nortix/hr_leave/services/annual.py;nortix/hr_leave/tasks.py;nortix/hr_leave/doctype/nortix_leave_settings,nortix/hr_leave/services/test_annual.py;nortix/hr_leave/services/test_annual_job.py;nortix/hr_leave/doctype/nortix_leave_settings/test_nortix_leave_settings.py,docs/testing/evidence/LV-006/2026-11-11-test-run.md
 LV-007,Medical leave,Confirmed,,,,
 LV-008,Leave balance,Confirmed,,,,
 LV-009,Application and approval,Confirmed,,,,

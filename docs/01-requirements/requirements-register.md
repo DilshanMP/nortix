@@ -18,7 +18,7 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 | LV-003 | Casual leave before the 1-year mark | Confirmed | HR |
 | LV-004 | Casual leave after the 1-year mark | Confirmed | HR |
 | LV-005 | Additional leave before the 1-year mark | Confirmed | HR |
-| LV-006 | Annual leave by quarter of the 1-year mark | Built | HR |
+| LV-006 | Annual leave by quarter of the 1-year mark | Verified | HR |
 | LV-007 | Medical leave | Confirmed | HR, Management |
 | LV-008 | Leave balance calculation | Confirmed | HR |
 | LV-009 | Application and approval flow | Confirmed | HR |
