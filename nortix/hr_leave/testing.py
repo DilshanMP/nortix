@@ -33,7 +33,9 @@ def make_leave_type(name: str = ANNUAL_LEAVE_TYPE, **values) -> str:
 	return name
 
 
-def make_leave_period(company: str, from_date: str = "2026-01-01", to_date: str = "2026-12-31") -> str:
+def make_leave_period(
+	company: str, from_date: str = "2026-01-01", to_date: str = "2026-12-31", is_active: int = 1
+) -> str:
 	existing = frappe.db.get_value(
 		"Leave Period", {"company": company, "from_date": from_date, "to_date": to_date}, "name"
 	)
@@ -46,7 +48,7 @@ def make_leave_period(company: str, from_date: str = "2026-01-01", to_date: str 
 				"company": company,
 				"from_date": from_date,
 				"to_date": to_date,
-				"is_active": 1,
+				"is_active": is_active,
 			}
 		)
 		.insert()
@@ -54,7 +56,9 @@ def make_leave_period(company: str, from_date: str = "2026-01-01", to_date: str 
 	)
 
 
-def make_employee(company: str, date_of_joining: str, status: str = "Active") -> str:
+def make_employee(
+	company: str, date_of_joining: str, status: str = "Active", relieving_date: str | None = None
+) -> str:
 	doc = frappe.get_doc(
 		{
 			"doctype": "Employee",
@@ -70,7 +74,7 @@ def make_employee(company: str, date_of_joining: str, status: str = "Active") ->
 	if status != "Active":
 		doc.status = status
 		if status == "Left":
-			doc.relieving_date = date_of_joining
+			doc.relieving_date = relieving_date or date_of_joining
 		doc.save()
 	return doc.name
 

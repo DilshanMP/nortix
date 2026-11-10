@@ -72,8 +72,16 @@ class TestAnnualAllocationJob(IntegrationTestCase):
 		cls.period_b = make_leave_period(COMPANY_B)
 		set_annual_settings()
 
+	def setUp(self):
+		# Each job run touches every Active employee on the site, so every test starts from the
+		# same data and leaves nothing behind for the next one.
+		frappe.db.savepoint("nortix_job_test")
+		self.form_dict = frappe.local.form_dict
+
 	def tearDown(self):
 		frappe.set_user("Administrator")
+		frappe.local.form_dict = self.form_dict
+		frappe.db.rollback(save_point="nortix_job_test")
 
 	def test_creates_submitted_allocation_with_source_and_company(self):
 		employee = make_employee(COMPANY_A, "2025-05-20")
@@ -115,23 +123,57 @@ class TestAnnualAllocationJob(IntegrationTestCase):
 
 	def test_duplicate_run_creates_one_allocation(self):
 		employee = make_employee(COMPANY_A, "2025-02-10")
-		allocate_due_annual_leave("2026-03-01")
-		allocate_due_annual_leave("2026-03-01")
-		allocate_due_annual_leave("2026-03-02")
+		first = allocate_due_annual_leave("2026-03-01")
+		second = allocate_due_annual_leave("2026-03-01")
+		third = allocate_due_annual_leave("2026-03-02")
 		self.assertEqual(len(allocations(employee)), 1)
+		self.assertEqual(len(first["created"]), 1)
+		for summary in (second, third):
+			self.assertIn(employee, summary["skipped"])
+			self.assertNotIn(employee, summary["failed"])
+			self.assertEqual(summary["created"], [])
 
 	def test_skips_employee_with_migration_allocation(self):
 		employee = make_employee(COMPANY_A, "2025-01-15")
 		make_allocation(employee, COMPANY_A, "2026-01-15", 9, "migration")
-		allocate_due_annual_leave("2026-02-01")
+		summary = allocate_due_annual_leave("2026-02-01")
+		self.assertIn(employee, summary["skipped"])
+		self.assertNotIn(employee, summary["failed"])
 		[allocation] = allocations(employee)
 		self.assertEqual((allocation.nortix_source, allocation.new_leaves_allocated), ("migration", 9))
 
 	def test_skips_employee_with_manual_allocation(self):
 		employee = make_employee(COMPANY_A, "2025-01-16")
 		make_allocation(employee, COMPANY_A, "2026-01-16", 12, "manual")
-		allocate_due_annual_leave("2026-02-01")
+		summary = allocate_due_annual_leave("2026-02-01")
+		self.assertIn(employee, summary["skipped"])
+		self.assertNotIn(employee, summary["failed"])
 		self.assertEqual([a.nortix_source for a in allocations(employee)], ["manual"])
+
+	def test_cancelled_migration_allocation_does_not_block_job(self):
+		employee = make_employee(COMPANY_A, "2025-01-28")
+		make_allocation(employee, COMPANY_A, "2026-01-28", 9, "migration").cancel()
+		summary = allocate_due_annual_leave("2026-02-01")
+		[allocation] = allocations(employee)
+		self.assertEqual((allocation.nortix_source, allocation.new_leaves_allocated), (ALLOCATION_SOURCE, 14))
+		self.assertIn(allocation.name, summary["created"])
+
+	def test_draft_manual_allocation_blocks_job(self):
+		employee = make_employee(COMPANY_A, "2025-01-29")
+		frappe.get_doc(
+			{
+				"doctype": "Leave Allocation",
+				"employee": employee,
+				"company": COMPANY_A,
+				"leave_type": ANNUAL_LEAVE_TYPE,
+				"from_date": "2026-01-29",
+				"to_date": "2026-12-31",
+				"new_leaves_allocated": 3,
+			}
+		).insert()
+		summary = allocate_due_annual_leave("2026-02-01")
+		self.assertIn(employee, summary["skipped"])
+		self.assertEqual(allocations(employee), [])
 
 	def test_does_not_recreate_cancelled_job_allocation(self):
 		employee = make_employee(COMPANY_A, "2025-01-17")
@@ -141,7 +183,7 @@ class TestAnnualAllocationJob(IntegrationTestCase):
 		self.assertEqual(allocations(employee), [])
 
 	def test_skips_left_employee(self):
-		employee = make_employee(COMPANY_A, "2025-01-18", status="Left")
+		employee = make_employee(COMPANY_A, "2025-01-18", status="Left", relieving_date="2026-01-31")
 		allocate_due_annual_leave("2026-02-01")
 		self.assertEqual(allocations(employee), [])
 
@@ -150,6 +192,34 @@ class TestAnnualAllocationJob(IntegrationTestCase):
 		summary = allocate_due_annual_leave("2026-02-01")
 		self.assertEqual(allocations(employee), [])
 		self.assertIn(COMPANY_NO_PERIOD, summary["companies_without_period"])
+
+	def test_join_after_run_date_gives_nothing(self):
+		employee = make_employee(COMPANY_A, "2026-03-01")
+		allocate_due_annual_leave("2026-02-01")
+		self.assertEqual(allocations(employee), [])
+
+	def test_inactive_leave_period_is_ignored(self):
+		make_leave_period(COMPANY_NO_PERIOD, is_active=0)
+		employee = make_employee(COMPANY_NO_PERIOD, "2025-01-30")
+		summary = allocate_due_annual_leave("2026-02-01")
+		self.assertEqual(allocations(employee), [])
+		self.assertIn(COMPANY_NO_PERIOD, summary["companies_without_period"])
+
+	def test_period_not_calendar_year_is_reported_not_allocated(self):
+		period = make_leave_period(COMPANY_NO_PERIOD, "2025-04-01", "2026-03-31")
+		employee = make_employee(COMPANY_NO_PERIOD, "2025-01-31")
+		summary = allocate_due_annual_leave("2026-02-01")
+		self.assertEqual(allocations(employee), [])
+		self.assertIn(period, summary["periods_not_calendar_year"])
+
+	def test_changed_amount_applies_to_new_allocations_only(self):
+		before = make_employee(COMPANY_A, "2025-10-05")
+		allocate_due_annual_leave("2026-10-05")
+		set_annual_settings(annual_q4_days=5)
+		after = make_employee(COMPANY_A, "2025-10-06")
+		allocate_due_annual_leave("2026-10-06")
+		self.assertEqual(allocations(before)[0].new_leaves_allocated, 4)
+		self.assertEqual(allocations(after)[0].new_leaves_allocated, 5)
 
 	def test_disabled_switch_creates_nothing(self):
 		employee = make_employee(COMPANY_A, "2025-01-20")
@@ -191,8 +261,30 @@ class TestAnnualAllocationJob(IntegrationTestCase):
 		self.assertIn(failing, log.error)
 		self.assertNotIn(failing_name, log.error)
 
+	def test_failed_submit_leaves_no_draft_and_retries_next_run(self):
+		from hrms.hr.doctype.leave_allocation.leave_allocation import LeaveAllocation
+
+		failing = make_employee(COMPANY_A, "2025-02-11")
+		original_on_submit = LeaveAllocation.on_submit
+
+		def fail_on_submit(allocation):
+			if allocation.employee == failing:
+				raise frappe.ValidationError("simulated submit failure")
+			return original_on_submit(allocation)
+
+		with patch.object(LeaveAllocation, "on_submit", fail_on_submit):
+			summary = allocate_due_annual_leave("2026-03-01")
+		self.assertIn(failing, summary["failed"])
+		self.assertEqual(allocations(failing, docstatus=0), [])
+		self.assertEqual(allocations(failing), [])
+
+		retry = allocate_due_annual_leave("2026-03-02")
+		self.assertNotIn(failing, retry["failed"])
+		self.assertEqual(len(allocations(failing)), 1)
+
 	def test_unsuitable_leave_type_stops_run_with_one_log(self):
 		employee = make_employee(COMPANY_A, "2025-01-25")
+		logs_before = frappe.db.count("Error Log", {"method": "Annual leave allocation not run"})
 		frappe.db.set_value("Leave Type", ANNUAL_LEAVE_TYPE, "allow_over_allocation", 0)
 		try:
 			summary = allocate_due_annual_leave("2026-02-01")
@@ -201,7 +293,8 @@ class TestAnnualAllocationJob(IntegrationTestCase):
 		self.assertEqual(summary["not_run"], "annual leave type not suitable")
 		self.assertEqual(summary["failed"], [])
 		self.assertEqual(allocations(employee), [])
-		self.assertTrue(latest_error_log("Annual leave allocation not run"))
+		logs_after = frappe.db.count("Error Log", {"method": "Annual leave allocation not run"})
+		self.assertEqual(logs_after, logs_before + 1)
 
 	def test_second_run_stops_while_first_holds_lock(self):
 		from frappe.utils.synchronization import filelock
@@ -232,6 +325,29 @@ class TestAnnualAllocationJob(IntegrationTestCase):
 			client_insert({**allocation, "nortix_source": ALLOCATION_SOURCE})
 		created = client_insert(allocation)
 		self.assertFalse(created.get("nortix_source"))
+
+	def test_hr_user_cannot_change_source_on_existing_allocation(self):
+		from frappe.client import insert as client_insert
+		from frappe.client import save as client_save
+
+		employee = make_employee(COMPANY_A, "2025-02-12")
+		frappe.set_user(
+			make_user("nortix.leave.hr.a@example.com", ["HR User", "Employee"], company=COMPANY_A)
+		)
+		draft = client_insert(
+			{
+				"doctype": "Leave Allocation",
+				"employee": employee,
+				"company": COMPANY_A,
+				"leave_type": ANNUAL_LEAVE_TYPE,
+				"from_date": "2026-02-12",
+				"to_date": "2026-12-31",
+				"new_leaves_allocated": 5,
+			}
+		)
+		draft["nortix_source"] = ALLOCATION_SOURCE
+		with self.assertRaises(frappe.PermissionError):
+			client_save(draft)
 
 	def test_other_company_hr_user_cannot_read_allocation(self):
 		own = make_employee(COMPANY_A, "2025-01-24")
