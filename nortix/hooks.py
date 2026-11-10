@@ -96,7 +96,7 @@ app_license = "Proprietary"
 # ------------
 
 # before_install = "nortix.install.before_install"
-# after_install = "nortix.install.after_install"
+after_install = "nortix.hr_leave.setup.after_install"
 
 # Uninstallation
 # ------------
@@ -159,34 +159,20 @@ app_license = "Proprietary"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Leave Allocation": {
+		"validate": "nortix.hr_leave.services.allocation_source.validate_allocation_source",
+	},
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"nortix.tasks.all"
-# 	],
-# 	"daily": [
-# 		"nortix.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"nortix.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"nortix.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"nortix.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"daily": [
+		"nortix.hr_leave.tasks.daily",
+	],
+}
 
 # Testing
 # -------
