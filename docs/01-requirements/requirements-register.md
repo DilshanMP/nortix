@@ -2,7 +2,7 @@
 title: "Requirements Register"
 status: "Draft"
 owner: Pasindu Dilshan
-updated: 2026-11-09
+updated: 2026-11-11
 ---
 
 # Requirements Register
@@ -18,7 +18,7 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 | LV-003 | Casual leave before the 1-year mark | Draft | HR |
 | LV-004 | Casual leave after the 1-year mark | Draft | HR |
 | LV-005 | Additional leave before the 1-year mark | Draft | HR |
-| LV-006 | Annual leave by quarter of the 1-year mark | Draft | HR |
+| LV-006 | Annual leave by quarter of the 1-year mark | Confirmed | HR |
 | LV-007 | Medical leave | Draft | HR, Management |
 | LV-008 | Leave balance calculation | Draft | HR |
 | LV-009 | Application and approval flow | Draft | HR |
@@ -28,6 +28,8 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 | LV-013 | Migration from the leave Sheet | Draft | HR |
 
 Details and acceptance criteria: [leave-rules.md](leave-rules.md).
+
+LV-006 confirmed 2026-11-11 by the product owner, following the current leave Sheet policy (open-questions.md Q1, Q2, Q9 to Q11, Q17).
 
 ## Later releases (not started)
 

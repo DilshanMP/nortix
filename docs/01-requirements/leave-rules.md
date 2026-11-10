@@ -2,7 +2,7 @@
 title: "Leave Rules (R1)"
 status: "Draft"
 owner: Pasindu Dilshan
-updated: 2026-11-09
+updated: 2026-11-11
 source: "Leave_Managment_System_Akvora Sheet (Leave Policy, Leave Balance formulas), HR"
 ---
 
@@ -19,43 +19,49 @@ These rules are taken from the current leave Sheet. Each stays Draft until HR co
 ### LV-002 Leave period
 **Rule:** Entitlements reset each calendar year (1 Jan to 31 Dec).
 **Acceptance:** Allocations are created per leave period; a new period starts on 1 Jan.
-**Q:** Does unused leave carry forward? If yes, which types and how many days?
+**Answer (Q2, leave Sheet):** No carry forward; each period starts fresh.
 
 ### LV-003 Casual leave before the 1-year mark
 **Rule:** In the joining year: 0.5 day for each month from the join month to December inclusive. In a later year before the 1-year mark: 6 days.
 **Acceptance:**
 - Joined 2026-05-10, period 2026 → 4 days (May to Dec = 8 months × 0.5).
 - Joined 2025-11-01, period 2026, mark not reached on the date checked → 6 days.
-**Q:** Is the 0.5 per month earned monthly (accrual) or granted up front for the year?
+**Answer (Q3, product owner 2026-11-11):** Granted up front for the year, counting the join month, as the leave Sheet calculates.
 
 ### LV-004 Casual leave after the 1-year mark
 **Rule:** From the 1-year mark: 7 days per leave period.
 **Acceptance:** Employee whose mark has passed has 7 days of casual leave for the period.
-**Q:** In the year the mark falls, is it 7 days in full or 7 days minus casual already granted?
+**Answer (leave Sheet):** 7 days in full from the mark date. Casual leave already taken earlier in the period counts against the 7.
 
 ### LV-005 Additional leave before the 1-year mark
 **Rule:** 1 day while the 1-year mark has not been reached; 0 after.
 **Acceptance:** Allocation stops at the mark; days already taken remain recorded.
 
 ### LV-006 Annual leave by quarter of the 1-year mark
-**Rule:** When the 1-year mark is reached, annual leave for that period is set by the quarter the mark falls in: Jan to Mar 14, Apr to Jun 10, Jul to Sep 7, Oct to Dec 4. In later periods: 14.
+**Status:** Confirmed 2026-11-11 by the product owner (leave Sheet policy).
+**Rule:** The 1-year mark is the join date plus 12 months (the anniversary; a 29 Feb join date gives 28 Feb). From the mark date, annual leave for that period is set by the quarter the mark falls in: Jan to Mar 14, Apr to Jun 10, Jul to Sep 7, Oct to Dec 4. Before the mark date there is no annual leave. In later periods: 14. Permanent status is not required (Q1).
 **Acceptance:**
 - Mark 2026-11-01 → 4 days in 2026 (AKINT-022 case).
 - Mark 2026-03-31 → 14; mark 2026-04-01 → 10.
-- Mark not yet reached → 0.
+- Joined 2025-04-01 → mark 2026-04-01 → 10 days in 2026.
+- Joined 2024-02-29 → mark 2025-02-28 → 14 days in 2025.
+- On 2026-10-31, an employee with mark 2026-11-01 has no annual leave for 2026.
 - Mark in 2025, period 2026 → 14.
+- Employee with no join date → no annual leave; listed for HR review.
 - The daily job running twice creates one allocation.
-**Q:** Is Permanent status required in addition to the mark (the Sheet requires it today)?
+**Answered (leave Sheet, 2026-11-11):** Q1, Q2, Q9, Q10, Q11, Q17 (open-questions.md).
+**Still open, not blocking the calculation:** Q12 to Q16.
 
 ### LV-007 Medical leave
 **Rule:** 7 days per leave period; applications need management approval.
 **Acceptance:** Medical applications route to the management approver.
-**Q:** From when is an employee eligible: joining, or the 1-year mark? (The Sheet does not calculate it.)
+**Answer (Q4, leave Sheet Leave Policy tab):** From joining ("All employees"). The Sheet does not calculate a medical balance.
 
 ### LV-008 Leave balance
 **Rule:** Balance = allocation for the period minus approved leave days in the period.
 **Acceptance:** The balance report per employee and type equals allocation minus approved days.
-**Q:** Are half days allowed? Do pending applications reduce the available balance?
+**Answer (leave Sheet):** Half days are allowed (0.5 day).
+**Answer (Q5, product owner 2026-11-11):** Only approved leave reduces the balance. The Sheet counts unapproved rows too; LV-013 reconciliation explains the difference.
 
 ### LV-009 Application and approval
 **Rule:** Employees apply on phone or web; the leave approver (reports-to manager) approves or rejects; HR can view all.

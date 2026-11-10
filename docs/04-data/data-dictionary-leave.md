@@ -2,7 +2,7 @@
 title: "Data Dictionary: Leave (R1)"
 status: "Draft"
 owner: Pasindu Dilshan
-updated: 2026-11-09
+updated: 2026-11-11
 ---
 
 # Data Dictionary: Leave (R1)
@@ -22,7 +22,7 @@ Standard Frappe HR DocTypes are used as they are. Only the items below are added
 | annual_q3_days | Float | 7 | LV-006 |
 | annual_q4_days | Float | 4 | LV-006 |
 | annual_full_days | Float | 14 | LV-006 |
-| annual_requires_permanent | Check | 1 | LV-006, Q1 |
+| annual_requires_permanent | Check | 0 | LV-006, Q1 (Akvora: not required) |
 | medical_days | Float | 7 | LV-007 |
 | low_balance_days | Float | 2 | LV-010 |
 | critical_balance_days | Float | 0 | LV-010 |
@@ -35,7 +35,7 @@ Standard Frappe HR DocTypes are used as they are. Only the items below are added
 | nic_number | Data, permlevel 1 | Identity; restricted personal |
 | legacy_employee_id | Data, unique | Mapping to the Sheet and legacy ERP |
 
-Confirmation date uses the standard `final_confirmation_date` field on Employee.
+The 1-year mark is computed as `date_of_joining` plus 12 months (Q9, Q10); `final_confirmation_date` is not used for leave.
 
 ## Custom fields on Leave Allocation
 
