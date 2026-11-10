@@ -17,12 +17,13 @@ Standard Frappe HR DocTypes are used as they are. Only the items below are added
 | casual_days_before_mark | Float | 6 | LV-003 |
 | casual_days_after_mark | Float | 7 | LV-004 |
 | additional_days_before_mark | Float | 1 | LV-005 |
+| is_annual_allocation_enabled | Check | 0 | LV-006; turned on after the Sheet import (LV-013) |
 | annual_q1_days | Float | 14 | LV-006 |
 | annual_q2_days | Float | 10 | LV-006 |
 | annual_q3_days | Float | 7 | LV-006 |
 | annual_q4_days | Float | 4 | LV-006 |
 | annual_full_days | Float | 14 | LV-006 |
-| annual_requires_permanent | Check | 0 | LV-006, Q1 (Akvora: not required) |
+| annual_requires_permanent | Check | 0 | Not built: Permanent status is not required (Q1) |
 | medical_days | Float | 7 | LV-007 |
 | low_balance_days | Float | 2 | LV-010 |
 | critical_balance_days | Float | 0 | LV-010 |
@@ -41,4 +42,4 @@ The 1-year mark is computed as `date_of_joining` plus 12 months (Q9, Q10); `fina
 
 | Field | Type | Purpose |
 | --- | --- | --- |
-| nortix_source | Select (first_year_annual, migration, manual) | Idempotency and audit of automatic allocations |
+| nortix_source | Select (annual_rule, migration, manual), read only, not copied on amend | Audit of how an allocation was created; a cancelled `annual_rule` allocation stops the daily job recreating it (LV-006) |
