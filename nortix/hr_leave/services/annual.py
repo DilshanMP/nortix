@@ -161,10 +161,8 @@ def _allocate(on_date, summary: dict) -> None:
 		set(queries.get_companies_with_active_employees()) - companies_with_period
 	)
 	# Every amount assumes the calendar year (LV-002); another period shape is reported, not guessed.
-	summary["periods_not_calendar_year"] = [
-		period.name for period in periods if not _is_calendar_year(period)
-	]
-	periods = [period for period in periods if _is_calendar_year(period)]
+	summary["periods_not_calendar_year"] = [period.name for period in periods if not is_calendar_year(period)]
+	periods = [period for period in periods if is_calendar_year(period)]
 
 	for period in periods:
 		employees = queries.get_active_employees_joined_by(period.company, on_date)
@@ -200,7 +198,7 @@ def _allocate(on_date, summary: dict) -> None:
 				summary["failed"].append(employee.name)
 
 
-def _is_calendar_year(period) -> bool:
+def is_calendar_year(period) -> bool:
 	from_date, to_date = getdate(period.from_date), getdate(period.to_date)
 	return (from_date.month, from_date.day) == (1, 1) and to_date == date(from_date.year, 12, 31)
 

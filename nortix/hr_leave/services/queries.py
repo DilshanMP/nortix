@@ -65,3 +65,31 @@ def get_employees_with_annual_allocation(
 		)
 	).run(pluck=True)
 	return set(rows)
+
+
+def get_allocation_covering(employee: str, leave_type: str, on_date) -> frappe._dict | None:
+	"""The submitted allocation of this leave type that covers `on_date`, whatever created it."""
+	allocation = frappe.qb.DocType("Leave Allocation")
+	rows = (
+		frappe.qb.from_(allocation)
+		.select(allocation.name, allocation.from_date, allocation.total_leaves_allocated)
+		.where(
+			(allocation.employee == employee)
+			& (allocation.leave_type == leave_type)
+			& (allocation.docstatus == 1)
+			& (allocation.from_date <= on_date)
+			& (allocation.to_date >= on_date)
+		)
+		.limit(1)
+	).run(as_dict=True)
+	return rows[0] if rows else None
+
+
+def has_adjustment(leave_allocation: str, docstatus: tuple[int, ...], source: str | None = None) -> bool:
+	"""Whether a Leave Adjustment in one of the given states (and, if given, from `source`)
+	exists for the allocation."""
+	adjustment = frappe.qb.DocType("Leave Adjustment")
+	condition = (adjustment.leave_allocation == leave_allocation) & adjustment.docstatus.isin(list(docstatus))
+	if source:
+		condition &= adjustment.nortix_source == source
+	return bool((frappe.qb.from_(adjustment).select(adjustment.name).where(condition).limit(1)).run())

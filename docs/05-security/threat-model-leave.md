@@ -2,7 +2,7 @@
 title: "Threat Model: Leave (R1)"
 status: "Draft"
 owner: Pasindu Dilshan
-updated: 2026-11-11
+updated: 2026-11-12
 ---
 
 # Threat Model: Leave (R1)
@@ -39,7 +39,8 @@ flowchart LR
 | T7 | Elevation | Employee approves own leave | Leave approver cannot equal applicant | Self-approval rejected |
 | T8 | Denial of service | Bulk import blocks the site | Import runs as background job in batches | Large-file test on staging |
 | T9 | Integrity | Allocation job runs twice and doubles leave | Skip any employee with an allocation for (employee, leave type, period); run lock so a second run stops; Frappe HR rejects overlapping allocations | Double run creates one allocation; run during a held lock creates none |
-| T10 | Tampering | User sets the allocation source field to suppress an employee's annual leave or disguise a manual allocation | Server rejects `nortix_source` unless set by the job or the import | HR user cannot set the source through the API |
+| T10 | Tampering | User sets the source field on an allocation or adjustment to suppress an employee's leave or disguise a manual change as automatic | Server rejects `nortix_source` on Leave Allocation and Leave Adjustment unless set by the jobs or the import | HR user cannot set the source through the API on either |
+| T11 | Integrity | An HR adjustment on a casual allocation silently stops, or is overwritten by, the 1-year casual rise | Only the job's own adjustment counts as done; an existing submitted HR adjustment is left alone and the employee is logged for HR review; a draft does not block | HR adjustment reported, not overridden; draft does not block |
 
 ## Residual risks
 Shared phones where staff stay logged in: mitigated by session expiry and user guidance; accepted for R1, review at R2.

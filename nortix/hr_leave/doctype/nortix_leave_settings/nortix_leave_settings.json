@@ -14,7 +14,24 @@
   "annual_q2_days",
   "column_break_quarter",
   "annual_q3_days",
-  "annual_q4_days"
+  "annual_q4_days",
+  "casual_section",
+  "is_casual_allocation_enabled",
+  "casual_leave_type",
+  "column_break_casual",
+  "casual_monthly_days_first_year",
+  "casual_days_before_mark",
+  "casual_days_after_mark",
+  "additional_section",
+  "is_additional_allocation_enabled",
+  "additional_leave_type",
+  "column_break_additional",
+  "additional_days_before_mark",
+  "medical_section",
+  "is_medical_allocation_enabled",
+  "medical_leave_type",
+  "column_break_medical",
+  "medical_days"
  ],
  "fields": [
   {
@@ -85,12 +102,119 @@
    "fieldname": "annual_q4_days",
    "fieldtype": "Float",
    "label": "Mark in October to December (Days)"
+  },
+  {
+   "fieldname": "casual_section",
+   "fieldtype": "Section Break",
+   "label": "Casual Leave"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_casual_allocation_enabled",
+   "fieldtype": "Check",
+   "label": "Allocate Casual Leave Automatically",
+   "description": "When ticked, the daily job creates casual leave allocations and adds the extra day at the 1-year mark. Turn on only after the leave Sheet import is reconciled."
+  },
+  {
+   "fieldname": "casual_leave_type",
+   "fieldtype": "Link",
+   "label": "Casual Leave Type",
+   "options": "Leave Type",
+   "mandatory_depends_on": "is_casual_allocation_enabled",
+   "description": "Leave Type used for casual leave. It must not be earned or carry-forward leave."
+  },
+  {
+   "fieldname": "column_break_casual",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0.5",
+   "fieldname": "casual_monthly_days_first_year",
+   "fieldtype": "Float",
+   "label": "Casual Days per Month in the Joining Year",
+   "description": "Granted up front for each month from the join month to December, counting the join month."
+  },
+  {
+   "default": "6",
+   "fieldname": "casual_days_before_mark",
+   "fieldtype": "Float",
+   "label": "Casual Days Before the 1-Year Mark",
+   "description": "Days in a leave period after the joining year, until the 1-year mark."
+  },
+  {
+   "default": "7",
+   "fieldname": "casual_days_after_mark",
+   "fieldtype": "Float",
+   "label": "Casual Days From the 1-Year Mark",
+   "description": "Days in a leave period once the 1-year mark is reached; in the year of the mark the difference is added on the mark date."
+  },
+  {
+   "fieldname": "additional_section",
+   "fieldtype": "Section Break",
+   "label": "Additional Leave"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_additional_allocation_enabled",
+   "fieldtype": "Check",
+   "label": "Allocate Additional Leave Automatically",
+   "description": "When ticked, the daily job creates additional leave allocations before the 1-year mark. Turn on only after the leave Sheet import is reconciled."
+  },
+  {
+   "fieldname": "additional_leave_type",
+   "fieldtype": "Link",
+   "label": "Additional Leave Type",
+   "options": "Leave Type",
+   "mandatory_depends_on": "is_additional_allocation_enabled",
+   "description": "Leave Type used for additional leave. It must not be earned or carry-forward leave."
+  },
+  {
+   "fieldname": "column_break_additional",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "additional_days_before_mark",
+   "fieldtype": "Float",
+   "label": "Additional Days Before the 1-Year Mark",
+   "description": "Days in each leave period before the 1-year mark, usable until the day before the mark."
+  },
+  {
+   "fieldname": "medical_section",
+   "fieldtype": "Section Break",
+   "label": "Medical Leave"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_medical_allocation_enabled",
+   "fieldtype": "Check",
+   "label": "Allocate Medical Leave Automatically",
+   "description": "When ticked, the daily job creates medical leave allocations from joining. Turn on only after the leave Sheet import is reconciled."
+  },
+  {
+   "fieldname": "medical_leave_type",
+   "fieldtype": "Link",
+   "label": "Medical Leave Type",
+   "options": "Leave Type",
+   "mandatory_depends_on": "is_medical_allocation_enabled",
+   "description": "Leave Type used for medical leave. It must allow over allocation, because a December joiner receives more days than remain in the period, and must not be earned or carry-forward leave."
+  },
+  {
+   "fieldname": "column_break_medical",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "7",
+   "fieldname": "medical_days",
+   "fieldtype": "Float",
+   "label": "Medical Days per Leave Period",
+   "description": "Days in every leave period from joining, in full in the joining year."
   }
  ],
  "index_web_pages_for_search": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-11-11 12:00:00.000000",
+ "modified": "2026-11-12 01:00:00.000000",
  "modified_by": "Administrator",
  "module": "HR Leave",
  "name": "Nortix Leave Settings",

@@ -41,3 +41,4 @@ updated: 2026-11-12
 | Q22 | When applying, should pending applications count against the balance? | HR | LV-008 | 2026-11-12, product owner: standard Frappe HR behaviour is kept; the check at application time uses approved leave only and pending days are shown separately |
 | Q23 | Who is the management approver for medical leave in each company (a person, or a role such as a Management user)? | HR, Management | LV-007, LV-009 (medical routing only) | |
 | Q24 | Should employees with status Inactive or Suspended receive automatic allocations? The Sheet does not filter by status; the system allocates to Active employees only until this is answered. | HR | LV-003 to LV-007 | |
+| Q25 | When an employee moves to another company in the group, should their leave allocations move with them, and does the new company's leave period start a fresh allocation? Today the jobs see the existing allocation and do not create a second one. | HR | LV-003 to LV-007, Q13 | |

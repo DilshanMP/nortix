@@ -2,7 +2,7 @@
 title: "Data Dictionary: Leave (R1)"
 status: "Draft"
 owner: Pasindu Dilshan
-updated: 2026-11-11
+updated: 2026-11-12
 ---
 
 # Data Dictionary: Leave (R1)
@@ -13,9 +13,11 @@ Standard Frappe HR DocTypes are used as they are. Only the items below are added
 
 | Field | Type | Default | Rule |
 | --- | --- | --- | --- |
+| is_casual_allocation_enabled | Check | 0 | LV-003, LV-004; turned on after the Sheet import (LV-013) |
 | casual_monthly_days_first_year | Float | 0.5 | LV-003 |
 | casual_days_before_mark | Float | 6 | LV-003 |
 | casual_days_after_mark | Float | 7 | LV-004 |
+| is_additional_allocation_enabled | Check | 0 | LV-005; turned on after the Sheet import (LV-013) |
 | additional_days_before_mark | Float | 1 | LV-005 |
 | is_annual_allocation_enabled | Check | 0 | LV-006; turned on after the Sheet import (LV-013) |
 | annual_q1_days | Float | 14 | LV-006 |
@@ -24,6 +26,7 @@ Standard Frappe HR DocTypes are used as they are. Only the items below are added
 | annual_q4_days | Float | 4 | LV-006 |
 | annual_full_days | Float | 14 | LV-006 |
 | annual_requires_permanent | Check | 0 | Not built: Permanent status is not required (Q1) |
+| is_medical_allocation_enabled | Check | 0 | LV-007; turned on after the Sheet import (LV-013) |
 | medical_days | Float | 7 | LV-007 |
 | low_balance_days | Float | 2 | LV-010 |
 | critical_balance_days | Float | 0 | LV-010 |
@@ -42,4 +45,12 @@ The 1-year mark is computed as `date_of_joining` plus 12 months (Q9, Q10); `fina
 
 | Field | Type | Purpose |
 | --- | --- | --- |
-| nortix_source | Select (annual_rule, migration, manual), read only, not copied on amend | Audit of how an allocation was created; a cancelled `annual_rule` allocation stops the daily job recreating it (LV-006) |
+| nortix_source | Select (annual_rule, casual_rule, additional_rule, medical_rule, migration, manual), read only, not copied on amend | Audit of how an allocation was created; a cancelled allocation from a leave rule stops the daily job recreating it (LV-003 to LV-007) |
+
+The extra casual day at the 1-year mark (LV-004) is a standard Leave Adjustment on the casual allocation, posted on the mark date and marked `casual_rule`. Only the job's own adjustment, submitted or cancelled, counts as done. A submitted adjustment made by HR leaves no room for another (Frappe HR allows one per allocation), so the job logs the employee under "Leave allocation needs review" instead.
+
+## Custom fields on Leave Adjustment
+
+| Field | Type | Purpose |
+| --- | --- | --- |
+| nortix_source | Select (casual_rule), read only, not copied on amend | Marks the casual rise the daily job adds at the 1-year mark (LV-004); set by server code only |
