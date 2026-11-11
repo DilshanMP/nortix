@@ -168,9 +168,9 @@ doc_events = {
 	},
 	"Leave Application": {
 		"validate": "nortix.hr_leave.services.medical_approval.route_to_hr",
-		"on_update": "nortix.hr_leave.services.medical_approval.share_with_backups",
 		"before_submit": "nortix.hr_leave.services.medical_approval.check_approver",
 		"on_submit": "nortix.hr_leave.services.medical_approval.notify_hr_of_backup_decision",
+		"before_cancel": "nortix.hr_leave.services.medical_approval.check_canceller",
 	},
 }
 

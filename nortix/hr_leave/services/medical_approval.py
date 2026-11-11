@@ -1,17 +1,20 @@
-"""Medical leave approval by HR and named backups (LV-007, LV-009, Q23)."""
+"""Medical leave approval by HR and named backups (LV-007, LV-009, Q23, Q30, Q32)."""
 
 import frappe
 from frappe import _
 from frappe.utils import escape_html, formatdate, get_fullname
+from hrms.hr.doctype.leave_application.leave_application import get_employee_leave_approver
 
 from nortix.hr_leave.services import queries
 
 HR_ROLES = ("HR Manager", "HR User")
+DECIDING_ROLES = {"Leave Approver", *HR_ROLES}
 DECISIONS = ("Approved", "Rejected")
 
 
 def _settings():
-	return frappe.get_cached_doc("Nortix Leave Settings")
+	# Read fresh: a cached copy can outlive a settings change or a rolled-back transaction.
+	return frappe.get_single("Nortix Leave Settings")
 
 
 def _is_medical(doc, settings) -> bool:
@@ -22,19 +25,49 @@ def _backups(settings) -> set[str]:
 	return {row.user for row in settings.medical_backup_approvers or []}
 
 
+def _roles(user: str) -> set[str]:
+	return set(frappe.get_roles(user))
+
+
 def _is_hr(user: str) -> bool:
-	return bool(set(frappe.get_roles(user)) & set(HR_ROLES))
+	return bool(_roles(user) & set(HR_ROLES))
+
+
+def _is_enabled(user: str) -> bool:
+	return bool(frappe.db.get_value("User", user, "enabled"))
+
+
+def _can_see_application(user: str, doc) -> bool:
+	"""Whether the user's own permission rules (company, employee) allow this application (Q30).
+	Backups reach applications through the Leave Approver role, limited by these rules; nothing is
+	shared with them, because a Frappe share that allows submit always allows editing too."""
+	return frappe.permissions.has_user_permission(doc, user=user)
+
+
+def _is_active_backup(user: str, settings) -> bool:
+	"""A named backup who is still enabled and still holds a role that can decide leave."""
+	return user in _backups(settings) and _is_enabled(user) and bool(_roles(user) & DECIDING_ROLES)
 
 
 def validate_medical_settings(settings) -> None:
-	"""Q23: the named approver must be HR; backups must be active users who can decide leave."""
-	if settings.medical_leave_approver and not _is_hr(settings.medical_leave_approver):
-		frappe.throw(
-			_("The Medical Leave Approver {0} must have the HR Manager or HR User role.").format(
-				frappe.bold(settings.medical_leave_approver)
-			),
-			title=_("Approver Not HR"),
-		)
+	"""Q23, Q30: the named approver is a group-wide HR user, because every company's medical
+	applications go to them; backups must be active users who can decide leave."""
+	approver = settings.medical_leave_approver
+	if approver:
+		if not _is_hr(approver) or not _is_enabled(approver):
+			frappe.throw(
+				_(
+					"The Medical Leave Approver {0} must be an enabled user with the HR Manager or HR User role."
+				).format(frappe.bold(approver)),
+				title=_("Approver Not HR"),
+			)
+		if frappe.permissions.get_user_permissions(approver).get("Company"):
+			frappe.throw(
+				_(
+					"The Medical Leave Approver {0} is limited to certain companies, but receives every company's medical applications. Choose a group-wide HR user."
+				).format(frappe.bold(approver)),
+				title=_("Approver Not Group-Wide"),
+			)
 	for row in settings.medical_backup_approvers or []:
 		enabled, user_type = frappe.db.get_value("User", row.user, ["enabled", "user_type"]) or (0, None)
 		if not enabled or user_type != "System User":
@@ -43,7 +76,7 @@ def validate_medical_settings(settings) -> None:
 				title=_("Backup Approver Not Allowed"),
 			)
 		# Frappe HR lets only Leave Approver and HR roles change an application's status.
-		if not set(frappe.get_roles(row.user)) & {"Leave Approver", *HR_ROLES}:
+		if not _roles(row.user) & DECIDING_ROLES:
 			frappe.throw(
 				_("Backup approver {0} needs the Leave Approver role to approve or reject leave.").format(
 					frappe.bold(row.user)
@@ -53,61 +86,52 @@ def validate_medical_settings(settings) -> None:
 
 
 def route_to_hr(doc, method=None) -> None:
-	"""LV-007: a draft medical application goes to the named HR user, not the reporting manager."""
+	"""LV-007: a draft medical application goes to the named HR user; one changed away from
+	medical goes back to the employee's usual approver."""
+	if doc.docstatus:
+		return
 	settings = _settings()
-	if doc.docstatus or not _is_medical(doc, settings) or not settings.medical_leave_approver:
-		return
-	if doc.leave_approver != settings.medical_leave_approver:
-		doc.leave_approver = settings.medical_leave_approver
-		doc.leave_approver_name = get_fullname(settings.medical_leave_approver)
-
-
-def share_with_backups(doc, method=None) -> None:
-	"""Backups need not hold an HR role, so each medical application is shared with them so they
-	can open and decide it."""
-	settings = _settings()
-	if doc.docstatus or not _is_medical(doc, settings):
-		return
-	for user in _backups(settings):
-		frappe.share.add_docshare(
-			doc.doctype, doc.name, user, write=1, submit=1, flags={"ignore_share_permission": True}
-		)
-
-
-def remove_shares_of_removed_backups(settings) -> None:
-	"""A user taken off the backup list loses access to open medical applications at once."""
-	before = settings.get_doc_before_save()
-	if not before:
-		return
-	removed = _backups(before) - _backups(settings)
-	if not removed or not settings.medical_leave_type:
-		return
-	open_applications = frappe.get_all(
-		"Leave Application",
-		filters={"leave_type": settings.medical_leave_type, "docstatus": 0},
-		pluck="name",
-	)
-	for name in open_applications:
-		for user in removed:
-			frappe.share.remove("Leave Application", name, user, flags={"ignore_share_permission": True})
+	approver = settings.medical_leave_approver
+	if _is_medical(doc, settings):
+		if approver and doc.leave_approver != approver:
+			doc.leave_approver = approver
+			doc.leave_approver_name = get_fullname(approver)
+	elif approver and doc.leave_approver == approver and doc.has_value_changed("leave_type"):
+		doc.leave_approver = get_employee_leave_approver(doc.employee)
+		doc.leave_approver_name = get_fullname(doc.leave_approver) if doc.leave_approver else None
 
 
 def check_approver(doc, method=None) -> None:
-	"""LV-007, LV-009: only HR or a named backup may decide medical leave, and never their own.
-	Applies to the form and the API alike, because both submit the document."""
+	"""LV-007, LV-009, Q30: medical leave is decided only by HR or an active named backup who
+	can see the employee, and never by the employee themselves. Applies to the form and the API
+	alike, because both submit the document."""
 	settings = _settings()
 	if not _is_medical(doc, settings) or doc.status not in DECISIONS:
 		return
 	user = frappe.session.user
-	if user == "Administrator":
-		return
 	if user == frappe.db.get_value("Employee", doc.employee, "user_id"):
 		frappe.throw(_("You cannot decide your own medical leave."), frappe.PermissionError)
-	if _is_hr(user) or user in _backups(settings):
+	if user == "Administrator":
 		return
-	frappe.throw(
-		_("Medical leave can only be decided by HR or a named backup approver."), frappe.PermissionError
-	)
+	allowed = _is_hr(user) or _is_active_backup(user, settings)
+	if not allowed or not _can_see_application(user, doc):
+		frappe.throw(
+			_("Medical leave can only be decided by HR or a named backup approver for this employee."),
+			frappe.PermissionError,
+		)
+
+
+def check_canceller(doc, method=None) -> None:
+	"""Q32: only HR who can see the employee may cancel medical leave, because cancelling gives
+	the days back."""
+	settings = _settings()
+	if not _is_medical(doc, settings):
+		return
+	user = frappe.session.user
+	if user == "Administrator":
+		return
+	if not _is_hr(user) or not _can_see_application(user, doc):
+		frappe.throw(_("Only HR can cancel medical leave."), frappe.PermissionError)
 
 
 def notify_hr_of_backup_decision(doc, method=None) -> None:
@@ -123,7 +147,7 @@ def notify_hr_of_backup_decision(doc, method=None) -> None:
 			hr_user
 			for role in HR_ROLES
 			for hr_user in queries.get_enabled_users_with_role(role)
-			if hr_user != user and frappe.has_permission("Employee", "read", doc.employee, user=hr_user)
+			if hr_user != user and _can_see_application(hr_user, doc)
 		}
 	)
 	if not recipients:
