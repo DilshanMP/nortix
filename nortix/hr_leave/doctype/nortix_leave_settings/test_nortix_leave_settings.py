@@ -12,9 +12,10 @@ from nortix.hr_leave.testing import (
 	set_leave_settings,
 )
 
-# The tests create their own Leave Types; the generated ones pull in records from apps
-# that are not installed (Leave Type -> Salary Component -> Payment Gateway).
-IGNORE_TEST_RECORD_DEPENDENCIES = ["Leave Type"]
+# The tests create their own Leave Types and Users; the generated ones pull in records from
+# apps that are not installed (Leave Type -> Salary Component -> Payment Gateway, User -> Email
+# Account -> Company).
+IGNORE_TEST_RECORD_DEPENDENCIES = ["Leave Type", "User"]
 
 
 class TestNortixLeaveSettings(IntegrationTestCase):

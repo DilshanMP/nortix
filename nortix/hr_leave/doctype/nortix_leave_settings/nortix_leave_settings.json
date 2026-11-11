@@ -32,6 +32,10 @@
   "medical_leave_type",
   "column_break_medical",
   "medical_days",
+  "medical_approval_section",
+  "medical_leave_approver",
+  "column_break_medical_approval",
+  "medical_backup_approvers",
   "alerts_section",
   "is_balance_alert_enabled",
   "balance_alert_role",
@@ -262,12 +266,35 @@
    "fieldtype": "Check",
    "label": "Also Send to Users Without a Company Restriction",
    "description": "Leave unticked unless group-wide HR users should receive every company's balances by email; users limited to companies always receive only their own."
+  },
+  {
+   "fieldname": "medical_approval_section",
+   "fieldtype": "Section Break",
+   "label": "Medical Leave Approval"
+  },
+  {
+   "fieldname": "medical_leave_approver",
+   "fieldtype": "Link",
+   "label": "Medical Leave Approver",
+   "options": "User",
+   "description": "HR user who receives new medical leave applications. Any HR user, or a backup below, can approve them."
+  },
+  {
+   "fieldname": "column_break_medical_approval",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "medical_backup_approvers",
+   "fieldtype": "Table MultiSelect",
+   "label": "Medical Leave Backup Approvers",
+   "options": "Nortix Medical Backup Approver",
+   "description": "Staff who may approve medical leave when HR is not available. HR is emailed every time one of them decides."
   }
  ],
  "index_web_pages_for_search": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-11-12 03:00:00.000000",
+ "modified": "2026-11-12 05:00:00.000000",
  "modified_by": "Administrator",
  "module": "HR Leave",
  "name": "Nortix Leave Settings",

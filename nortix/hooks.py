@@ -166,6 +166,12 @@ doc_events = {
 	"Leave Adjustment": {
 		"validate": "nortix.hr_leave.services.allocation_source.validate_allocation_source",
 	},
+	"Leave Application": {
+		"validate": "nortix.hr_leave.services.medical_approval.route_to_hr",
+		"before_submit": "nortix.hr_leave.services.medical_approval.check_approver",
+		"on_submit": "nortix.hr_leave.services.medical_approval.notify_hr_of_backup_decision",
+		"before_cancel": "nortix.hr_leave.services.medical_approval.check_canceller",
+	},
 }
 
 # Saturday half days must count 0.5 leave day (LV-014); no other installed app overrides this class.

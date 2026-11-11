@@ -19,9 +19,9 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 | LV-004 | Casual leave after the 1-year mark | Built | HR |
 | LV-005 | Additional leave before the 1-year mark | Built | HR |
 | LV-006 | Annual leave by quarter of the 1-year mark | Verified | HR |
-| LV-007 | Medical leave | Confirmed | HR, Management |
+| LV-007 | Medical leave | Built | HR, Management |
 | LV-008 | Leave balance calculation | Confirmed | HR |
-| LV-009 | Application and approval flow | Confirmed | HR |
+| LV-009 | Application and approval flow | Built | HR |
 | LV-010 | Low and critical balance alerts | Built | HR |
 | LV-011 | Rules configurable per customer | Confirmed | Product owner |
 | LV-012 | Company and branch isolation | Confirmed | Product owner |
@@ -30,7 +30,7 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 
 Details and acceptance criteria: [leave-rules.md](leave-rules.md).
 
-LV-006 confirmed 2026-11-11 and the other R1 leave rules confirmed 2026-11-12 by the product owner, following the current leave Sheet policy; sources for each answer are in leave-rules.md and open-questions.md. LV-007: the medical allocation is built; routing medical applications to the management approver waits for Q23, so the requirement stays Confirmed.
+LV-006 confirmed 2026-11-11 and the other R1 leave rules confirmed 2026-11-12 by the product owner, following the current leave Sheet policy; sources for each answer are in leave-rules.md and open-questions.md.
 
 ## Later releases (not started)
 
