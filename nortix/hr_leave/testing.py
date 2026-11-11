@@ -181,3 +181,14 @@ def take_leave(employee: str, company: str, leave_type: str, from_date: str, to_
 	if status == "Approved":
 		doc.submit()
 	return doc
+
+
+def before_tests():
+	"""Complete site setup before the nortix tests, as Frappe HR does for its own tests.
+
+	Frappe runs only the tested app's before_tests hooks, so on a fresh CI site nothing else
+	runs the setup wizard, and creating a company fails for want of ERPNext's base records
+	(Warehouse Type "Transit", genders, the fiscal year)."""
+	from hrms.tests.test_utils import before_tests as hrms_before_tests
+
+	hrms_before_tests()

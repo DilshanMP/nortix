@@ -194,7 +194,7 @@ scheduler_events = {
 # Testing
 # -------
 
-# before_tests = "nortix.install.before_tests"
+before_tests = "nortix.hr_leave.testing.before_tests"
 
 # Extend DocType Class
 # ------------------------------
