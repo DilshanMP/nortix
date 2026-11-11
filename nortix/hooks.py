@@ -11,15 +11,15 @@ app_license = "Proprietary"
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "nortix",
-# 		"logo": "/assets/nortix/logo.png",
-# 		"title": "Nortix",
-# 		"route": "/nortix",
-# 		"has_permission": "nortix.api.permission.has_app_permission",
-# 	}
-# ]
+add_to_apps_screen = [
+	{
+		"name": "nortix",
+		"logo": "/assets/nortix/images/nortix-logo.svg",
+		"title": "Nortix",
+		"route": "/desk/nortix-leave",
+		"has_permission": "nortix.hr_leave.setup.check_app_permission",
+	}
+]
 
 # The dock, the rail down the left of the desk, is a document rather than a hook. Author it in
 # Manage Dock on a developer-mode site and press Export to App, and it is written to
