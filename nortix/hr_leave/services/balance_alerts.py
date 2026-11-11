@@ -8,6 +8,7 @@ from hrms.hr.doctype.leave_application.leave_application import get_leave_balanc
 from nortix.hr_leave.services import queries
 
 LEAVE_TYPE_FIELDS = ("casual_leave_type", "additional_leave_type", "annual_leave_type", "medical_leave_type")
+EXCLUDED_RECIPIENT_ROLES = ("Employee", "Employee Self Service", "All", "Guest", "Desk User")
 LOW = "Low"
 CRITICAL = "Critical"
 
@@ -36,6 +37,27 @@ def validate_alert_settings(settings) -> None:
 			_("Set the role that receives the weekly summary before turning it on."),
 			title=_("Recipient Role Missing"),
 		)
+	if settings.balance_alert_role and not is_hr_role(settings.balance_alert_role):
+		frappe.throw(
+			_(
+				"Role {0} cannot receive the weekly summary: the recipient role must be able to read every Leave Allocation it is allowed to see, as HR roles can. Employee roles would expose other people's balances."
+			).format(frappe.bold(settings.balance_alert_role)),
+			title=_("Recipient Role Not Allowed"),
+		)
+
+
+def is_hr_role(role: str) -> bool:
+	"""A role that reads Leave Allocations in general, not only its own (LV-010, T5).
+
+	The Employee roles can read Employee records broadly when no User Permission limits them,
+	so letting them receive the summary would email other people's balances to ordinary staff.
+	"""
+	if role in EXCLUDED_RECIPIENT_ROLES:
+		return False
+	return any(
+		perm.role == role and perm.read and not perm.if_owner and not perm.permlevel
+		for perm in frappe.get_meta("Leave Allocation").permissions
+	)
 
 
 def get_balance_alerts(on_date=None, user: str | None = None, company: str | None = None) -> list[dict]:
@@ -96,29 +118,55 @@ def get_balance_alerts(on_date=None, user: str | None = None, company: str | Non
 
 def send_weekly_alerts(on_date=None) -> list[str]:
 	"""LV-010: email each holder of the recipient role a summary of the low and critical balances
-	they are allowed to see; returns the users emailed."""
+	they are allowed to see; returns the users emailed.
+
+	Balances are worked out once, then each recipient's list is cut down to the employees their
+	own permissions allow (LV-012). A recipient with no Company restriction would receive every
+	company, so they are included only when the settings say so (Q26).
+	"""
 	settings = frappe.get_single("Nortix Leave Settings")
 	if not settings.is_balance_alert_enabled or not settings.balance_alert_role:
 		return []
 
 	on_date = getdate(on_date)
+	all_rows = get_balance_alerts(on_date)
+	if not all_rows:
+		return []
+
 	sent = []
 	for user in queries.get_enabled_users_with_role(settings.balance_alert_role):
+		if not settings.is_balance_alert_to_unrestricted and not has_company_restriction(user):
+			continue
 		try:
-			rows = get_balance_alerts(on_date, user=user)
-		except frappe.PermissionError:
+			visible = _employees_visible_to(user)
+			rows = [row for row in all_rows if row["employee"] in visible]
+			if not rows:
+				continue
+			frappe.sendmail(
+				recipients=[user],
+				subject=_("Leave balances to check, {0}").format(formatdate(on_date)),
+				message=_render_summary(rows, on_date),
+				reference_doctype="Nortix Leave Settings",
+				reference_name="Nortix Leave Settings",
+			)
+		except Exception as error:
+			# One recipient's problem must not stop the others; log IDs and the error type only.
+			frappe.log_error(
+				title="Leave balance summary not sent",
+				message=f"{type(error).__name__} for user {user}",
+				reference_doctype="Nortix Leave Settings",
+			)
 			continue
-		if not rows:
-			continue
-		frappe.sendmail(
-			recipients=[user],
-			subject=_("Leave balances to check, {0}").format(formatdate(on_date)),
-			message=_render_summary(rows, on_date),
-			reference_doctype="Nortix Leave Settings",
-			reference_name="Nortix Leave Settings",
-		)
 		sent.append(user)
 	return sent
+
+
+def has_company_restriction(user: str) -> bool:
+	return bool(frappe.permissions.get_user_permissions(user).get("Company"))
+
+
+def _employees_visible_to(user: str) -> set[str]:
+	return set(frappe.get_list("Employee", filters={"status": "Active"}, pluck="name", user=user))
 
 
 def _render_summary(rows: list[dict], on_date) -> str:
