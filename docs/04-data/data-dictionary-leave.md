@@ -57,3 +57,15 @@ The extra casual day at the 1-year mark (LV-004) is a standard Leave Adjustment 
 | Field | Type | Purpose |
 | --- | --- | --- |
 | nortix_source | Select (casual_rule), read only, not copied on amend | Marks the casual rise the daily job adds at the 1-year mark (LV-004); set by server code only |
+
+## Nortix Holiday Year (LV-014)
+
+One record per calendar year; saving it rebuilds the shared calendar. Site-wide configuration (one calendar for all companies, Q29), so it has no company field.
+
+| Field | Type | Purpose |
+| --- | --- | --- |
+| year | Int, unique, set once | The calendar year |
+| holiday_list | Link Holiday List, read only | The built list, named `Nortix <year>` |
+| holidays | Table: Nortix Mercantile Holiday (holiday_date, description) | Gazetted mercantile holidays entered by HR |
+
+The built Holiday List has every Sunday as a weekly off, every Saturday as a half-day weekly off, and each mercantile holiday as a full day. It is assigned to every company from 1 January through Holiday List Assignment; a company that already has another calendar from that date is logged under "Holiday calendar needs review" instead of being changed. Leave Application counts a Saturday as 0.5 day through a nortix override of the leave-day count (LV-014, Q28).
