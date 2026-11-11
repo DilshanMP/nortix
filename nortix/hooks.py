@@ -175,6 +175,9 @@ scheduler_events = {
 	"daily": [
 		"nortix.hr_leave.tasks.daily",
 	],
+	"weekly": [
+		"nortix.hr_leave.tasks.weekly",
+	],
 }
 
 # Testing

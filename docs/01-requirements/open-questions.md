@@ -42,3 +42,5 @@ updated: 2026-11-12
 | Q23 | Who is the management approver for medical leave in each company (a person, or a role such as a Management user)? | HR, Management | LV-007, LV-009 (medical routing only) | |
 | Q24 | Should employees with status Inactive or Suspended receive automatic allocations? The Sheet does not filter by status; the system allocates to Active employees only until this is answered. | HR | LV-003 to LV-007 | |
 | Q25 | When an employee moves to another company in the group, should their leave allocations move with them, and does the new company's leave period start a fresh allocation? Today the jobs see the existing allocation and do not create a second one. | HR | LV-003 to LV-007, Q13 | |
+\g<1>2026-11-12, product owner: confirmed; HR roles only, users with no company restriction only when the setting is ticked |
+\g<1>2026-11-12, product owner: weekly only, never twice in the same week; the job skips anyone already sent that week |

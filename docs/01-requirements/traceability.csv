@@ -8,7 +8,7 @@ LV-006,Annual by quarter of 1-year mark,Verified,ADR-0004,nortix/hr_leave/servic
 LV-007,Medical leave,Confirmed,ADR-0004,nortix/hr_leave/services/leave_rules.py;nortix/hr_leave/services/leave_allocation_job.py;nortix/hr_leave/tasks.py,nortix/hr_leave/services/test_leave_rules.py;nortix/hr_leave/services/test_leave_allocation_job.py;nortix/hr_leave/doctype/nortix_leave_settings/test_nortix_leave_settings.py,docs/testing/evidence/LV-003/2026-11-12-test-run.md
 LV-008,Leave balance,Confirmed,,,,
 LV-009,Application and approval,Confirmed,,,,
-LV-010,Low and critical alerts,Confirmed,,,,
+LV-010,Low and critical alerts,Built,ADR-0004,nortix/hr_leave/services/balance_alerts.py;nortix/hr_leave/report/leave_balance_alerts;nortix/hr_leave/tasks.py,nortix/hr_leave/services/test_balance_alerts.py,docs/testing/evidence/LV-010/2026-11-12-test-run.md
 LV-011,Configurable rules,Confirmed,ADR-0004,,,
 LV-012,Company and branch isolation,Confirmed,ADR-0002,,,
 LV-013,Migration from leave Sheet,Confirmed,docs/04-data/migration-leave-sheet.md,,,

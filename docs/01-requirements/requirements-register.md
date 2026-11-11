@@ -22,7 +22,7 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 | LV-007 | Medical leave | Confirmed | HR, Management |
 | LV-008 | Leave balance calculation | Confirmed | HR |
 | LV-009 | Application and approval flow | Confirmed | HR |
-| LV-010 | Low and critical balance alerts | Confirmed | HR |
+| LV-010 | Low and critical balance alerts | Built | HR |
 | LV-011 | Rules configurable per customer | Confirmed | Product owner |
 | LV-012 | Company and branch isolation | Confirmed | Product owner |
 | LV-013 | Migration from the leave Sheet | Confirmed | HR |

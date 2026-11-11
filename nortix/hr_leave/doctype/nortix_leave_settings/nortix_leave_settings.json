@@ -31,7 +31,14 @@
   "is_medical_allocation_enabled",
   "medical_leave_type",
   "column_break_medical",
-  "medical_days"
+  "medical_days",
+  "alerts_section",
+  "is_balance_alert_enabled",
+  "balance_alert_role",
+  "is_balance_alert_to_unrestricted",
+  "column_break_alerts",
+  "low_balance_days",
+  "critical_balance_days"
  ],
  "fields": [
   {
@@ -209,12 +216,58 @@
    "fieldtype": "Float",
    "label": "Medical Days per Leave Period",
    "description": "Days in every leave period from joining, in full in the joining year."
+  },
+  {
+   "fieldname": "alerts_section",
+   "fieldtype": "Section Break",
+   "label": "Balance Alerts"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_balance_alert_enabled",
+   "fieldtype": "Check",
+   "label": "Send Weekly Balance Summary",
+   "description": "When ticked, each user with the recipient role receives a weekly email listing low and critical balances for the companies they can see."
+  },
+  {
+   "default": "HR Manager",
+   "fieldname": "balance_alert_role",
+   "fieldtype": "Link",
+   "label": "Summary Recipient Role",
+   "options": "Role",
+   "mandatory_depends_on": "is_balance_alert_enabled",
+   "description": "Role whose users receive the weekly summary; it must be an HR role that reads Leave Allocations, and each user sees only the employees their permissions allow."
+  },
+  {
+   "fieldname": "column_break_alerts",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "2",
+   "fieldname": "low_balance_days",
+   "fieldtype": "Float",
+   "label": "Low Balance (Days or Less)",
+   "description": "A balance at or below this number of days is shown as Low."
+  },
+  {
+   "default": "0",
+   "fieldname": "critical_balance_days",
+   "fieldtype": "Float",
+   "label": "Critical Balance (Days or Less)",
+   "description": "A balance at or below this number of days is shown as Critical. Must not be more than the low balance."
+  },
+  {
+   "default": "0",
+   "fieldname": "is_balance_alert_to_unrestricted",
+   "fieldtype": "Check",
+   "label": "Also Send to Users Without a Company Restriction",
+   "description": "Leave unticked unless group-wide HR users should receive every company's balances by email; users limited to companies always receive only their own."
   }
  ],
  "index_web_pages_for_search": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-11-12 01:00:00.000000",
+ "modified": "2026-11-12 03:00:00.000000",
  "modified_by": "Administrator",
  "module": "HR Leave",
  "name": "Nortix Leave Settings",
