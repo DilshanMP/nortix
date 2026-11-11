@@ -72,7 +72,7 @@ def get_allocation_covering(employee: str, leave_type: str, on_date) -> frappe._
 	allocation = frappe.qb.DocType("Leave Allocation")
 	rows = (
 		frappe.qb.from_(allocation)
-		.select(allocation.name, allocation.from_date, allocation.total_leaves_allocated)
+		.select(allocation.name, allocation.from_date, allocation.to_date, allocation.total_leaves_allocated)
 		.where(
 			(allocation.employee == employee)
 			& (allocation.leave_type == leave_type)

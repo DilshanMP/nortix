@@ -62,7 +62,7 @@ The extra casual day at the 1-year mark (LV-004) is a standard Leave Adjustment 
 
 ## Nortix Holiday Year (LV-014)
 
-One record per calendar year; saving it rebuilds the shared calendar. Site-wide configuration (one calendar for all companies, Q29), so it has no company field.
+One record per calendar year (2000 to next year); saving it rebuilds the shared calendar. Site-wide configuration (one calendar for all companies, Q29), so it has no company field. Only HR Managers and System Managers without a company restriction can change it (Q31); HR users and employees can read it.
 
 | Field | Type | Purpose |
 | --- | --- | --- |

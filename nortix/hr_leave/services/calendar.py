@@ -78,28 +78,36 @@ def get_half_day_holidays(employee: str, from_date, to_date) -> list:
 	return dates
 
 
-def build_calendar(year: int) -> str:
+def build_calendar(year: int, log_conflicts: bool = True) -> str | None:
 	"""LV-014, Q29: create or refresh the year's Holiday List from the mercantile holidays HR
 	entered, and assign it to every company. Safe to run again: the rows are replaced, and a
-	company already assigned is not assigned twice."""
+	company already assigned is not assigned twice. Returns the list name, or None when a Holiday
+	List of that name exists that this calendar did not create (it is never overwritten)."""
 	year = cint(year)
-	holiday_year = frappe.db.get_value("Nortix Holiday Year", {"year": year})
+	holiday_year = frappe.db.get_value(
+		"Nortix Holiday Year", {"year": year}, ["name", "holiday_list"], as_dict=True
+	)
+	name = holiday_list_name(year)
+	exists = frappe.db.exists("Holiday List", name)
+	if exists and not (holiday_year and holiday_year.holiday_list == name):
+		frappe.log_error(
+			title="Holiday calendar needs review",
+			message=f"A Holiday List named {name} already exists and was not created by the yearly calendar; "
+			"it was left unchanged. Rename it so the calendar can be built.",
+			reference_doctype="Nortix Holiday Year",
+		)
+		return None
+
 	holidays = (
 		frappe.get_all(
 			"Nortix Mercantile Holiday",
-			filters={"parent": holiday_year, "parenttype": "Nortix Holiday Year"},
+			filters={"parent": holiday_year.name, "parenttype": "Nortix Holiday Year"},
 			fields=["holiday_date", "description"],
 		)
 		if holiday_year
 		else []
 	)
-
-	name = holiday_list_name(year)
-	holiday_list = (
-		frappe.get_doc("Holiday List", name)
-		if frappe.db.exists("Holiday List", name)
-		else frappe.new_doc("Holiday List")
-	)
+	holiday_list = frappe.get_doc("Holiday List", name) if exists else frappe.new_doc("Holiday List")
 	holiday_list.update(
 		{
 			"holiday_list_name": name,
@@ -109,41 +117,52 @@ def build_calendar(year: int) -> str:
 		}
 	)
 	holiday_list.set("holidays", get_calendar_rows(year, holidays))
-	# HR users may maintain the calendar but not Holiday List itself; the list is derived from
+	# Only group-wide HR may maintain the calendar (LV-014); Holiday List itself is derived from
 	# their entries, so the system writes it on their behalf.
 	holiday_list.flags.ignore_permissions = True
 	holiday_list.save()
 
 	if holiday_year:
-		frappe.db.set_value("Nortix Holiday Year", holiday_year, "holiday_list", name, update_modified=False)
-	assign_to_companies(year)
+		frappe.db.set_value(
+			"Nortix Holiday Year", holiday_year.name, "holiday_list", name, update_modified=False
+		)
+	assign_to_companies(year, log_conflicts=log_conflicts)
 	return name
 
 
-def assign_to_companies(year: int) -> dict:
+def assign_to_companies(year: int, log_conflicts: bool = True) -> dict:
 	"""Give every company the year's calendar from 1 January (Q29).
 
-	A company that already has a different calendar assigned from that date is left alone and
-	logged for HR: replacing it would silently change how its leave is counted.
+	A company whose own calendar already covers part of the year is left alone and reported for
+	HR: replacing it would silently change how its leave is counted.
 	Returns {"added": [...], "conflicts": [...]}.
 	"""
+	year = cint(year)
 	name = holiday_list_name(year)
-	start = date(cint(year), 1, 1)
-	existing = {
-		row.assigned_to: row.holiday_list
-		for row in frappe.get_all(
-			"Holiday List Assignment",
-			filters={"applicable_for": "Company", "docstatus": 1, "from_date": start},
-			fields=["assigned_to", "holiday_list"],
+	start, end = date(year, 1, 1), date(year, 12, 31)
+	assignment = frappe.qb.DocType("Holiday List Assignment")
+	holiday_list = frappe.qb.DocType("Holiday List")
+	rows = (
+		frappe.qb.from_(assignment)
+		.join(holiday_list)
+		.on(holiday_list.name == assignment.holiday_list)
+		.select(assignment.assigned_to, assignment.holiday_list)
+		.where(
+			(assignment.applicable_for == "Company")
+			& (assignment.docstatus == 1)
+			& (assignment.from_date <= end)
+			& (holiday_list.to_date >= start)
 		)
-	}
-	result = {"added": [], "conflicts": []}
+	).run(as_dict=True)
+	assigned, competing = set(), set()
+	for row in rows:
+		(assigned if row.holiday_list == name else competing).add(row.assigned_to)
+
+	result = {"added": [], "conflicts": sorted(competing - assigned)}
 	for company in frappe.get_all("Company", pluck="name"):
-		if company in existing:
-			if existing[company] != name:
-				result["conflicts"].append(company)
+		if company in assigned or company in competing:
 			continue
-		assignment = frappe.get_doc(
+		doc = frappe.get_doc(
 			{
 				"doctype": "Holiday List Assignment",
 				"applicable_for": "Company",
@@ -152,15 +171,15 @@ def assign_to_companies(year: int) -> dict:
 				"from_date": start,
 			}
 		)
-		assignment.flags.ignore_permissions = True
-		assignment.insert()
-		assignment.submit()
+		doc.flags.ignore_permissions = True
+		doc.insert()
+		doc.submit()
 		result["added"].append(company)
-	if result["conflicts"]:
+	if result["conflicts"] and log_conflicts:
 		frappe.log_error(
 			title="Holiday calendar needs review",
 			message=f"{name} was not assigned because these companies already have another calendar "
-			f"from {start}: " + ", ".join(sorted(result["conflicts"])),
+			f"covering {year}: " + ", ".join(result["conflicts"]),
 			reference_doctype="Nortix Holiday Year",
 		)
 	return result
@@ -168,16 +187,20 @@ def assign_to_companies(year: int) -> dict:
 
 def ensure_calendars(on_date) -> list[int]:
 	"""LV-014: make sure this year's calendar exists, and next year's from 1 December, so leave
-	can be counted before HR enters the mercantile holidays. Returns the years created."""
+	can be counted before HR enters the mercantile holidays, and that companies added since are
+	assigned. Conflicts are reported when HR saves the year, not every day. Returns the years
+	created."""
 	on_date = getdate(on_date)
 	years = [on_date.year] + ([on_date.year + 1] if on_date.month == 12 else [])
 	created = []
 	for year in years:
 		if frappe.db.exists("Nortix Holiday Year", {"year": year}):
-			build_calendar(year)
+			if frappe.db.exists("Holiday List", holiday_list_name(year)):
+				assign_to_companies(year, log_conflicts=False)
 			continue
 		doc = frappe.get_doc({"doctype": "Nortix Holiday Year", "year": year})
 		doc.flags.ignore_permissions = True
+		doc.flags.from_daily_job = True
 		doc.insert()
 		created.append(year)
 	return created

@@ -4,7 +4,7 @@
  "creation": "2026-11-12 04:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
- "description": "The year's mercantile holidays; saving builds the calendar shared by every company (LV-014). Site-wide configuration, so it has no company field.",
+ "description": "The year's mercantile holidays; saving builds the calendar shared by every company (LV-014). Only group-wide HR Managers and System Managers can change it. Site-wide configuration, so it has no company field.",
  "field_order": [
   "year",
   "holiday_list",
@@ -40,7 +40,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-12 04:00:00.000000",
+ "modified": "2026-11-12 06:00:00.000000",
  "modified_by": "Administrator",
  "module": "HR Leave",
  "name": "Nortix Holiday Year",
@@ -71,14 +71,7 @@
   },
   {
    "read": 1,
-   "role": "HR User",
-   "create": 1,
-   "write": 1,
-   "delete": 1,
-   "email": 1,
-   "print": 1,
-   "report": 1,
-   "share": 1
+   "role": "HR User"
   },
   {
    "read": 1,

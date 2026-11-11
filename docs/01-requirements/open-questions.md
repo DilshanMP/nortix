@@ -46,3 +46,7 @@ updated: 2026-11-12
 \g<1>2026-11-12, product owner: weekly only, never twice in the same week; the job skips anyone already sent that week |
 \g<1>2026-11-12, product owner: 0.5, the same as a full Saturday |
 \g<1>2026-11-12, product owner: one calendar for all companies and branches |
+| Q30 | Which companies' medical applications may the named HR approver and the backups see and decide? | Product owner | LV-007, LV-012 | 2026-11-12, product owner: the named approver must be group-wide (no company restriction); each backup only sees and decides medical leave for the companies their permissions allow |
+| Q31 | Who may change the shared holiday calendar? | Product owner | LV-014 | 2026-11-12, product owner: HR Managers and System Managers who are not limited to a company; other HR users can view it |
+| Q32 | Who may cancel an approved medical leave? | Product owner | LV-007 | 2026-11-12, product owner: HR only |
+| Q33 | What happens to a leave that crosses the year end over a Saturday? | Product owner | LV-014 | 2026-11-12, product owner: the employee applies separately for each year; the system refuses one application across both |

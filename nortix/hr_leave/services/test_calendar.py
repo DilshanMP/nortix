@@ -93,3 +93,9 @@ class TestCalendarRows(UnitTestCase):
 
 	def test_holiday_outside_year_is_ignored(self):
 		self.assertEqual(len(self.rows([{"holiday_date": "2027-01-01", "description": "Next Year"}])), 104)
+
+	def test_year_starting_on_saturday_has_53_saturdays_and_sundays(self):
+		rows = get_calendar_rows(2028, [])
+		self.assertEqual(sum(1 for row in rows if row["holiday_date"].weekday() == 5), 53)
+		self.assertEqual(sum(1 for row in rows if row["holiday_date"].weekday() == 6), 53)
+		self.assertEqual(len(rows), 106)
