@@ -28,6 +28,8 @@ Standard Frappe HR DocTypes are used as they are. Only the items below are added
 | annual_requires_permanent | Check | 0 | Not built: Permanent status is not required (Q1) |
 | is_medical_allocation_enabled | Check | 0 | LV-007; turned on after the Sheet import (LV-013) |
 | medical_days | Float | 7 | LV-007 |
+| is_balance_alert_enabled | Check | 0 | LV-010 weekly summary |
+| balance_alert_role | Link Role | HR Manager | LV-010 summary recipients (Q26) |
 | low_balance_days | Float | 2 | LV-010 |
 | critical_balance_days | Float | 0 | LV-010 |
 | casual_leave_type, additional_leave_type, annual_leave_type, medical_leave_type | Link Leave Type | | LV-001 |

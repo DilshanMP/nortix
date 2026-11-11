@@ -122,7 +122,11 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 ### LV-010 Low and critical balance alerts
 **Status:** Confirmed 2026-11-12 by the product owner.
 **Rule:** Balance of 2 days or less is low; 0 is critical (leave Sheet thresholds).
-**Acceptance:** HR sees both in a report and receives a weekly summary.
+**Acceptance:**
+- HR sees both in the Leave Balance Alerts report, limited to the companies they can see (LV-012).
+- Each user with the summary role receives a weekly email listing only the employees their permissions allow (Q26).
+- Only leave types the employee holds an allocation for on the date are checked, so an employee before the 1-year mark is not flagged for annual leave they do not have yet.
+- Pending applications do not lower the balance (Q22); employees who are not Active are not listed.
 
 ### LV-011 Configurable rules
 **Status:** Confirmed 2026-11-12 by the product owner.

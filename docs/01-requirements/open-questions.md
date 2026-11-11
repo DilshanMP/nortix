@@ -42,3 +42,4 @@ updated: 2026-11-12
 | Q23 | Who is the management approver for medical leave in each company (a person, or a role such as a Management user)? | HR, Management | LV-007, LV-009 (medical routing only) | |
 | Q24 | Should employees with status Inactive or Suspended receive automatic allocations? The Sheet does not filter by status; the system allocates to Active employees only until this is answered. | HR | LV-003 to LV-007 | |
 | Q25 | When an employee moves to another company in the group, should their leave allocations move with them, and does the new company's leave period start a fresh allocation? Today the jobs see the existing allocation and do not create a second one. | HR | LV-003 to LV-007, Q13 | |
+| Q26 | Who receives the weekly balance summary? The system sends it to every user with the HR Manager role (configurable in Nortix Leave Settings), each seeing only their own companies. | HR | LV-010 | |
