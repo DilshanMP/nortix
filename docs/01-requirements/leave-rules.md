@@ -165,4 +165,6 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 - HR enters the 2027 mercantile holidays; the 2027 calendar is built with every Sunday, every Saturday as a half day, and those holidays.
 - Building the calendar again does not duplicate days; a holiday HR adds or removes later is reflected when it is rebuilt.
 - Leave balances (LV-008) and alerts (LV-010) use these counts.
+- A leave that crosses into the next leave period and includes a Saturday is refused; the employee applies separately for each period (Q33).
+- Only HR Managers and System Managers who are not limited to a company can change the calendar (Q31).
 **Answered (product owner, 2026-11-12):** Q28: any leave on a Saturday, full or half day, counts 0.5. Q29: one calendar serves all companies and branches.
