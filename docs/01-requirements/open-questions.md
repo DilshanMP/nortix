@@ -37,10 +37,12 @@ updated: 2026-11-12
 | Q18 | After the 1-year mark the Sheet sets additional leave to 0, so a day taken before the mark shows as 1 day over. Show it as taken with nothing left, or keep the Sheet's negative balance? | HR | LV-005 | 2026-11-12, product owner (LV-005 wording "days already taken remain recorded"): shown as taken; the allocation ends the day before the mark, so the balance does not go below zero. LV-013 reconciliation explains the difference from the Sheet |
 | Q19 | Is the 1 additional day given in each leave period before the mark, or once in total? | HR | LV-005 | 2026-11-12, leave Sheet formula: in each leave period before the mark (joining year and, if the mark is in the next year, that year until the mark) |
 | Q20 | Does an employee who joins mid-year get all 7 medical days in the joining year, or a share by months worked? | HR | LV-007 | 2026-11-12, leave Sheet Leave Policy ("All employees", 7 per year, no pro-rating): all 7 |
-| Q21 | Who creates each year's Leave Period for the six companies: HR in December, or the system automatically? | Product owner | LV-002 (operations) | |
+\g<1>2026-11-12, product owner: a staff member, an admin or HR creates each year's Leave Period; the holiday calendar for the year is built automatically (LV-014) |
 | Q22 | When applying, should pending applications count against the balance? | HR | LV-008 | 2026-11-12, product owner: standard Frappe HR behaviour is kept; the check at application time uses approved leave only and pending days are shown separately |
-| Q23 | Who is the management approver for medical leave in each company (a person, or a role such as a Management user)? | HR, Management | LV-007, LV-009 (medical routing only) | |
-| Q24 | Should employees with status Inactive or Suspended receive automatic allocations? The Sheet does not filter by status; the system allocates to Active employees only until this is answered. | HR | LV-003 to LV-007 | |
+\g<1>2026-11-12, product owner: HR approves medical leave. HR names backup approvers (a staff admin or member) in settings; a backup can approve when HR is not available, and the system emails HR every time a backup approves |
+\g<1>2026-11-12, product owner: no; only Active employees receive automatic allocations |
 | Q25 | When an employee moves to another company in the group, should their leave allocations move with them, and does the new company's leave period start a fresh allocation? Today the jobs see the existing allocation and do not create a second one. | HR | LV-003 to LV-007, Q13 | |
 \g<1>2026-11-12, product owner: confirmed; HR roles only, users with no company restriction only when the setting is ticked |
 \g<1>2026-11-12, product owner: weekly only, never twice in the same week; the job skips anyone already sent that week |
+| Q28 | An employee applies for a half day on a Saturday, which is already a half working day. Does that count as 0.5 day or 0.25 day of leave? | HR | LV-014 | |
+| Q29 | Do all six companies and every branch (head office, service centre, warehouses) share one calendar: Sundays off, Saturdays half day, the same mercantile holidays? | HR | LV-014 | |

@@ -28,9 +28,9 @@ The 1-year mark is the join date plus 12 months (the anniversary; a 29 Feb join 
 - On 2027-01-01 no 2026 days are available; the four leave types have carry forward off.
 - A company without an active Leave Period gets no automatic allocations and appears in the job summary.
 - A Leave Period that does not run from 1 Jan to 31 Dec gets no automatic allocations and appears in the job summary, because every amount assumes the calendar year.
-**Open, not blocking:** Q21 (who creates each year's Leave Period).
+**Answered:** Q21: a staff member, an admin or HR creates each year's Leave Period (product owner, 2026-11-12).
 
-Automatic allocations (LV-003 to LV-007) go to employees with status Active; Inactive and Suspended are open (Q24).
+Automatic allocations (LV-003 to LV-007) go to employees with status Active only; Inactive and Suspended employees receive none (Q24).
 
 ### LV-003 Casual leave before the 1-year mark
 **Status:** Confirmed 2026-11-12 by the product owner.
@@ -95,12 +95,14 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 
 ### LV-007 Medical leave
 **Status:** Confirmed 2026-11-12 by the product owner.
-**Rule:** 7 days per leave period for all employees from joining (Q4), including the full 7 in the joining year (Q20); applications need management approval.
+**Rule:** 7 days per leave period for all employees from joining (Q4), including the full 7 in the joining year (Q20). Applications are approved by HR; when HR is not available, a backup approver named by HR can approve, and HR is emailed every time a backup approves (Q23).
 **Acceptance:**
 - Joined 2026-05-10 → 7 medical days for 2026 from 2026-05-10.
 - Joined 2025-03-01 → 7 medical days for 2026 from 2026-01-01.
-- Medical applications route to the management approver.
-**Open, blocking the approval route only:** Q23 (who the management approver is).
+- A medical application goes to HR, not to the reporting manager.
+- A named backup approver can approve it; HR receives an email naming the backup, the employee and the dates.
+- A user who is neither HR nor a named backup cannot approve it, through the form or the API.
+- The employee cannot approve their own medical leave, even if they are a named backup.
 
 ### LV-008 Leave balance
 **Status:** Confirmed 2026-11-12 by the product owner.
@@ -115,9 +117,9 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 
 ### LV-009 Application and approval
 **Status:** Confirmed 2026-11-12 by the product owner.
-**Rule:** Employees apply on phone or web; the leave approver (reports-to manager) approves or rejects; HR can view all. Medical leave goes to the management approver (LV-007).
+**Rule:** Employees apply on phone or web; the leave approver (reports-to manager) approves or rejects; HR can view all. Medical leave is approved by HR or a named backup (LV-007, Q23).
 **Acceptance:** An employee cannot approve their own leave; rejected leave does not reduce the balance.
-**Open, blocking medical routing only:** Q23.
+**Answered:** Q23 (product owner, 2026-11-12).
 
 ### LV-010 Low and critical balance alerts
 **Status:** Confirmed 2026-11-12 by the product owner.
@@ -146,3 +148,21 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 - Reconciliation report shows zero unexplained differences, signed off by HR.
 - An employee with no join date in the Sheet is not imported and is listed in the import error report for HR (moved from LV-006).
 **Pre-conditions:** 7 missing join dates, 17 missing companies and inconsistent company names fixed in the Sheet first (Q8).
+
+### LV-014 Holiday calendar and Saturday half days
+**Status:** Confirmed 2026-11-12 by the product owner.
+**Rule:** The holiday calendar for each year is built automatically: every Sunday is a holiday, every Saturday is a half working day, and the year's mercantile holidays are holidays. HR (or an admin) enters each year's gazetted mercantile holiday dates in the system once; the system builds the calendar from them. A leave day that falls on a Saturday counts as 0.5 day; Sundays and mercantile holidays inside a leave are not counted.
+**Acceptance:**
+
+| Leave from | Leave to | Days counted |
+| --- | --- | --- |
+| Fri 2026-03-06 | Sat 2026-03-07 | 1.5 |
+| Sat 2026-03-07 | Mon 2026-03-09 | 1.5 (Sat 0.5, Sun 0, Mon 1) |
+| Mon 2026-03-02 | Fri 2026-03-06 | 5 |
+| A full week Mon to Sun | | 5.5 |
+| A weekday that HR entered as a mercantile holiday | | 0 |
+
+- HR enters the 2027 mercantile holidays; the 2027 calendar is built with every Sunday, every Saturday as a half day, and those holidays.
+- Building the calendar again does not duplicate days; a holiday HR adds or removes later is reflected when it is rebuilt.
+- Leave balances (LV-008) and alerts (LV-010) use these counts.
+**Open:** Q28 (a half-day application on a Saturday), Q29 (one calendar for all companies and branches).

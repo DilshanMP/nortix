@@ -26,6 +26,7 @@ Status values: Draft (written, not confirmed), Confirmed (business owner agreed)
 | LV-011 | Rules configurable per customer | Confirmed | Product owner |
 | LV-012 | Company and branch isolation | Confirmed | Product owner |
 | LV-013 | Migration from the leave Sheet | Confirmed | HR |
+| LV-014 | Holiday calendar and Saturday half days | Confirmed | HR |
 
 Details and acceptance criteria: [leave-rules.md](leave-rules.md).
 
