@@ -60,6 +60,8 @@ Automatic allocations (LV-003 to LV-007) go to employees with status Active; Ina
 
 - 5 days taken by 2026-10-31, mark 2026-11-01 → 2 days left.
 - The daily job running twice adds the extra day once.
+- The rise applies whatever created the casual allocation, including the Sheet import (the rule is the same for every employee).
+- If HR has already submitted an adjustment on that allocation, the job does not add the day and lists the employee for HR review (Frappe HR allows one submitted adjustment per allocation).
 
 ### LV-005 Additional leave before the 1-year mark
 **Status:** Confirmed 2026-11-12 by the product owner.

@@ -47,4 +47,10 @@ The 1-year mark is computed as `date_of_joining` plus 12 months (Q9, Q10); `fina
 | --- | --- | --- |
 | nortix_source | Select (annual_rule, casual_rule, additional_rule, medical_rule, migration, manual), read only, not copied on amend | Audit of how an allocation was created; a cancelled allocation from a leave rule stops the daily job recreating it (LV-003 to LV-007) |
 
-The extra casual day at the 1-year mark (LV-004) is a standard Leave Adjustment on the casual allocation, posted on the mark date; any adjustment on that allocation, even a cancelled one, stops the job adding another.
+The extra casual day at the 1-year mark (LV-004) is a standard Leave Adjustment on the casual allocation, posted on the mark date and marked `casual_rule`. Only the job's own adjustment, submitted or cancelled, counts as done. A submitted adjustment made by HR leaves no room for another (Frappe HR allows one per allocation), so the job logs the employee under "Leave allocation needs review" instead.
+
+## Custom fields on Leave Adjustment
+
+| Field | Type | Purpose |
+| --- | --- | --- |
+| nortix_source | Select (casual_rule), read only, not copied on amend | Marks the casual rise the daily job adds at the 1-year mark (LV-004); set by server code only |
