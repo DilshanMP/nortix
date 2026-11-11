@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "creation": "2026-11-11 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "annual_section",
+  "is_annual_allocation_enabled",
+  "annual_leave_type",
+  "column_break_annual",
+  "annual_full_days",
+  "annual_quarter_section",
+  "annual_q1_days",
+  "annual_q2_days",
+  "column_break_quarter",
+  "annual_q3_days",
+  "annual_q4_days"
+ ],
+ "fields": [
+  {
+   "fieldname": "annual_section",
+   "fieldtype": "Section Break",
+   "label": "Annual Leave"
+  },
+  {
+   "default": "0",
+   "description": "When ticked, a daily job creates annual leave allocations for employees who reach their 1-year mark. Turn on only after the leave Sheet import is reconciled.",
+   "fieldname": "is_annual_allocation_enabled",
+   "fieldtype": "Check",
+   "label": "Allocate Annual Leave Automatically"
+  },
+  {
+   "description": "Leave Type used for annual leave. It must allow over allocation and must not be earned or carry-forward leave.",
+   "fieldname": "annual_leave_type",
+   "fieldtype": "Link",
+   "label": "Annual Leave Type",
+   "mandatory_depends_on": "is_annual_allocation_enabled",
+   "options": "Leave Type"
+  },
+  {
+   "fieldname": "column_break_annual",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "14",
+   "description": "Days of annual leave in every leave period after the one in which the 1-year mark falls.",
+   "fieldname": "annual_full_days",
+   "fieldtype": "Float",
+   "label": "Annual Days After the First Year"
+  },
+  {
+   "description": "Days of annual leave in the leave period of the 1-year mark, by the quarter the mark falls in. The 1-year mark is the join date plus 12 months.",
+   "fieldname": "annual_quarter_section",
+   "fieldtype": "Section Break",
+   "label": "Annual Leave in the Year of the 1-Year Mark"
+  },
+  {
+   "default": "14",
+   "description": "Mark falls 1 January to 31 March.",
+   "fieldname": "annual_q1_days",
+   "fieldtype": "Float",
+   "label": "Mark in January to March (Days)"
+  },
+  {
+   "default": "10",
+   "description": "Mark falls 1 April to 30 June.",
+   "fieldname": "annual_q2_days",
+   "fieldtype": "Float",
+   "label": "Mark in April to June (Days)"
+  },
+  {
+   "fieldname": "column_break_quarter",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "7",
+   "description": "Mark falls 1 July to 30 September.",
+   "fieldname": "annual_q3_days",
+   "fieldtype": "Float",
+   "label": "Mark in July to September (Days)"
+  },
+  {
+   "default": "4",
+   "description": "Mark falls 1 October to 31 December.",
+   "fieldname": "annual_q4_days",
+   "fieldtype": "Float",
+   "label": "Mark in October to December (Days)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-11-11 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR Leave",
+ "name": "Nortix Leave Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "HR Manager"
+  },
+  {
+   "read": 1,
+   "role": "HR User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
