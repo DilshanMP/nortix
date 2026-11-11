@@ -2,7 +2,7 @@
 
 import frappe
 from frappe import _
-from frappe.utils import escape_html, flt, formatdate, getdate
+from frappe.utils import add_days, escape_html, flt, formatdate, getdate
 from hrms.hr.doctype.leave_application.leave_application import get_leave_balance_on
 
 from nortix.hr_leave.services import queries
@@ -122,7 +122,8 @@ def send_weekly_alerts(on_date=None) -> list[str]:
 
 	Balances are worked out once, then each recipient's list is cut down to the employees their
 	own permissions allow (LV-012). A recipient with no Company restriction would receive every
-	company, so they are included only when the settings say so (Q26).
+	company, so they are included only when the settings say so (Q26). Each recipient gets at most
+	one summary per week, so a re-run or retry does not email them again (Q27).
 	"""
 	settings = frappe.get_single("Nortix Leave Settings")
 	if not settings.is_balance_alert_enabled or not settings.balance_alert_role:
@@ -133,9 +134,12 @@ def send_weekly_alerts(on_date=None) -> list[str]:
 	if not all_rows:
 		return []
 
+	week_start = add_days(on_date, -on_date.weekday())
 	sent = []
 	for user in queries.get_enabled_users_with_role(settings.balance_alert_role):
 		if not settings.is_balance_alert_to_unrestricted and not has_company_restriction(user):
+			continue
+		if queries.has_balance_summary_since(user, week_start):
 			continue
 		try:
 			visible = _employees_visible_to(user)

@@ -127,6 +127,7 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 - Each user with the summary role receives a weekly email listing only the employees their permissions allow (Q26). The role must be an HR role; users with no company restriction are included only when the settings allow it.
 - Only leave types the employee holds an allocation for on the date are checked, so an employee before the 1-year mark is not flagged for annual leave they do not have yet.
 - Pending applications do not lower the balance (Q22); employees who are not Active are not listed.
+- Each recipient receives the summary at most once per week, even if the job runs again (Q27).
 
 ### LV-011 Configurable rules
 **Status:** Confirmed 2026-11-12 by the product owner.

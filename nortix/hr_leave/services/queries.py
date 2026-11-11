@@ -134,3 +134,24 @@ def get_enabled_users_with_role(role: str) -> list[str]:
 		)
 		.orderby(user.name)
 	).run(pluck=True)
+
+
+def has_balance_summary_since(user: str, since) -> bool:
+	"""Whether the weekly balance summary was queued for `user` on or after `since` (LV-010, Q27)."""
+	queue = frappe.qb.DocType("Email Queue")
+	recipient = frappe.qb.DocType("Email Queue Recipient")
+	return bool(
+		(
+			frappe.qb.from_(queue)
+			.join(recipient)
+			.on(recipient.parent == queue.name)
+			.select(queue.name)
+			.where(
+				(queue.reference_doctype == "Nortix Leave Settings")
+				& (queue.creation >= since)
+				& (queue.status != "Error")
+				& (recipient.recipient == user)
+			)
+			.limit(1)
+		).run()
+	)

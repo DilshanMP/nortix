@@ -405,6 +405,29 @@ class TestBalanceAlerts(IntegrationTestCase):
 			frappe.db.count("Error Log", {"method": "Leave balance summary not sent"}), logs_before + 1
 		)
 
+	def test_second_run_in_same_week_sends_nothing(self):
+		employee = make_employee(COMPANY_A, "2024-01-21")
+		allocate(employee, COMPANY_A, MEDICAL_LEAVE_TYPE, 1)
+		manager = make_user("nortix.alert.hrm.a@example.com", ["HR Manager", "Employee"], company=COMPANY_A)
+
+		def queued_for(user):
+			return frappe.get_all(
+				"Email Queue Recipient",
+				filters={"recipient": user, "parenttype": "Email Queue"},
+				pluck="parent",
+			)
+
+		first = send_weekly_alerts(ON_DATE)
+		second = send_weekly_alerts(ON_DATE)
+		self.assertIn(manager, first)
+		self.assertNotIn(manager, second)
+		self.assertEqual(len(queued_for(manager)), 1)
+
+		# A summary queued in an earlier week does not block this week's.
+		frappe.db.set_value("Email Queue", queued_for(manager)[0], "creation", "2026-06-22 09:00:00")
+		third = send_weekly_alerts(ON_DATE)
+		self.assertIn(manager, third)
+
 	def test_negative_critical_rejected(self):
 		with self.assertRaisesRegex(frappe.ValidationError, "at least 0"):
 			set_alert_settings(critical_balance_days=-1)
