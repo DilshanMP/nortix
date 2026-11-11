@@ -2,7 +2,7 @@
 title: "Open Questions and Decisions"
 status: "Draft"
 owner: Pasindu Dilshan
-updated: 2026-11-11
+updated: 2026-11-12
 ---
 
 # Open Questions and Decisions
@@ -34,3 +34,10 @@ updated: 2026-11-11
 | Q15 | When a join or confirmation date is corrected after an allocation exists, should the system flag the allocation for HR to correct, or cancel and re-allocate automatically? | HR, Product owner | LV-003 to LV-006, LV-013 | |
 | Q16 | When the daily allocation job finds a 2026 annual allocation created by the migration, does it skip that employee for 2026? | Product owner | LV-006, LV-013 | 2026-11-11, product owner: yes. The job creates no annual allocation for an employee and period that already has one from the migration |
 | Q17 | Can "mark not yet reached → 0" be stated as "on any date before the mark, the employee has no annual allocation for that period"? | HR | LV-006 | 2026-11-11, leave Sheet: yes (see Q11) |
+| Q18 | After the 1-year mark the Sheet sets additional leave to 0, so a day taken before the mark shows as 1 day over. Show it as taken with nothing left, or keep the Sheet's negative balance? | HR | LV-005 | 2026-11-12, product owner (LV-005 wording "days already taken remain recorded"): shown as taken; the allocation ends the day before the mark, so the balance does not go below zero. LV-013 reconciliation explains the difference from the Sheet |
+| Q19 | Is the 1 additional day given in each leave period before the mark, or once in total? | HR | LV-005 | 2026-11-12, leave Sheet formula: in each leave period before the mark (joining year and, if the mark is in the next year, that year until the mark) |
+| Q20 | Does an employee who joins mid-year get all 7 medical days in the joining year, or a share by months worked? | HR | LV-007 | 2026-11-12, leave Sheet Leave Policy ("All employees", 7 per year, no pro-rating): all 7 |
+| Q21 | Who creates each year's Leave Period for the six companies: HR in December, or the system automatically? | Product owner | LV-002 (operations) | |
+| Q22 | When applying, should pending applications count against the balance? | HR | LV-008 | 2026-11-12, product owner: standard Frappe HR behaviour is kept; the check at application time uses approved leave only and pending days are shown separately |
+| Q23 | Who is the management approver for medical leave in each company (a person, or a role such as a Management user)? | HR, Management | LV-007, LV-009 (medical routing only) | |
+| Q24 | Should employees with status Inactive or Suspended receive automatic allocations? The Sheet does not filter by status; the system allocates to Active employees only until this is answered. | HR | LV-003 to LV-007 | |
