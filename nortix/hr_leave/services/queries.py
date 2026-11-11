@@ -93,3 +93,44 @@ def has_adjustment(leave_allocation: str, docstatus: tuple[int, ...], source: st
 	if source:
 		condition &= adjustment.nortix_source == source
 	return bool((frappe.qb.from_(adjustment).select(adjustment.name).where(condition).limit(1)).run())
+
+
+def get_allocated_leave_types(employees: list[str], leave_types: list[str], on_date) -> set[tuple[str, str]]:
+	"""(employee, leave type) pairs with a submitted allocation covering `on_date` (LV-010)."""
+	if not employees or not leave_types:
+		return set()
+	allocation = frappe.qb.DocType("Leave Allocation")
+	rows = (
+		frappe.qb.from_(allocation)
+		.select(allocation.employee, allocation.leave_type)
+		.distinct()
+		.where(
+			allocation.employee.isin(employees)
+			& allocation.leave_type.isin(leave_types)
+			& (allocation.docstatus == 1)
+			& (allocation.from_date <= on_date)
+			& (allocation.to_date >= on_date)
+		)
+	).run()
+	return {(employee, leave_type) for employee, leave_type in rows}
+
+
+def get_enabled_users_with_role(role: str) -> list[str]:
+	"""Enabled system users holding `role`, excluding the built-in Administrator and Guest."""
+	user = frappe.qb.DocType("User")
+	has_role = frappe.qb.DocType("Has Role")
+	return (
+		frappe.qb.from_(user)
+		.join(has_role)
+		.on(has_role.parent == user.name)
+		.select(user.name)
+		.distinct()
+		.where(
+			(has_role.parenttype == "User")
+			& (has_role.role == role)
+			& (user.enabled == 1)
+			& (user.user_type == "System User")
+			& user.name.notin(["Administrator", "Guest"])
+		)
+		.orderby(user.name)
+	).run(pluck=True)
