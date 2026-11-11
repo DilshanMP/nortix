@@ -39,10 +39,14 @@ updated: 2026-11-12
 | Q20 | Does an employee who joins mid-year get all 7 medical days in the joining year, or a share by months worked? | HR | LV-007 | 2026-11-12, leave Sheet Leave Policy ("All employees", 7 per year, no pro-rating): all 7 |
 \g<1>2026-11-12, product owner: a staff member, an admin or HR creates each year's Leave Period; the holiday calendar for the year is built automatically (LV-014) |
 | Q22 | When applying, should pending applications count against the balance? | HR | LV-008 | 2026-11-12, product owner: standard Frappe HR behaviour is kept; the check at application time uses approved leave only and pending days are shown separately |
-\g<1>2026-11-12, product owner: HR approves medical leave. HR names backup approvers (a staff admin or member) in settings; a backup can approve when HR is not available, and the system emails HR every time a backup approves |
+\g<1>2026-11-12, product owner: HR approves medical leave. HR names backup approvers (a staff admin or member) in settings; a backup can approve when HR is not available, \1. One named HR user, set in Nortix Leave Settings, receives new medical applications |
 \g<1>2026-11-12, product owner: no; only Active employees receive automatic allocations |
 | Q25 | When an employee moves to another company in the group, should their leave allocations move with them, and does the new company's leave period start a fresh allocation? Today the jobs see the existing allocation and do not create a second one. | HR | LV-003 to LV-007, Q13 | |
 \g<1>2026-11-12, product owner: confirmed; HR roles only, users with no company restriction only when the setting is ticked |
 \g<1>2026-11-12, product owner: weekly only, never twice in the same week; the job skips anyone already sent that week |
-| Q28 | An employee applies for a half day on a Saturday, which is already a half working day. Does that count as 0.5 day or 0.25 day of leave? | HR | LV-014 | |
-| Q29 | Do all six companies and every branch (head office, service centre, warehouses) share one calendar: Sundays off, Saturdays half day, the same mercantile holidays? | HR | LV-014 | |
+\g<1>2026-11-12, product owner: 0.5, the same as a full Saturday |
+\g<1>2026-11-12, product owner: one calendar for all companies and branches |
+| Q30 | Which companies' medical applications may the named HR approver and the backups see and decide? | Product owner | LV-007, LV-012 | 2026-11-12, product owner: the named approver must be group-wide (no company restriction); each backup only sees and decides medical leave for the companies their permissions allow |
+| Q31 | Who may change the shared holiday calendar? | Product owner | LV-014 | 2026-11-12, product owner: HR Managers and System Managers who are not limited to a company; other HR users can view it |
+| Q32 | Who may cancel an approved medical leave? | Product owner | LV-007 | 2026-11-12, product owner: HR only |
+| Q33 | What happens to a leave that crosses the year end over a Saturday? | Product owner | LV-014 | 2026-11-12, product owner: the employee applies separately for each year; the system refuses one application across both |

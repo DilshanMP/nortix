@@ -168,6 +168,11 @@ doc_events = {
 	},
 }
 
+# Saturday half days must count 0.5 leave day (LV-014); no other installed app overrides this class.
+override_doctype_class = {
+	"Leave Application": "nortix.hr_leave.overrides.NortixLeaveApplication",
+}
+
 # Scheduled Tasks
 # ---------------
 
@@ -196,9 +201,9 @@ scheduler_events = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "nortix.event.get_events"
-# }
+override_whitelisted_methods = {
+	"hrms.hr.doctype.leave_application.leave_application.get_number_of_leave_days": "nortix.hr_leave.overrides.get_number_of_leave_days",
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

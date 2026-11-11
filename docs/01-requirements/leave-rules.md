@@ -99,7 +99,7 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 **Acceptance:**
 - Joined 2026-05-10 → 7 medical days for 2026 from 2026-05-10.
 - Joined 2025-03-01 → 7 medical days for 2026 from 2026-01-01.
-- A medical application goes to HR, not to the reporting manager.
+- A medical application goes to the HR user named in Nortix Leave Settings, not to the reporting manager.
 - A named backup approver can approve it; HR receives an email naming the backup, the employee and the dates.
 - A user who is neither HR nor a named backup cannot approve it, through the form or the API.
 - The employee cannot approve their own medical leave, even if they are a named backup.
@@ -165,4 +165,6 @@ The criterion "employee with no join date" moved to LV-013 on 2026-11-12: the jo
 - HR enters the 2027 mercantile holidays; the 2027 calendar is built with every Sunday, every Saturday as a half day, and those holidays.
 - Building the calendar again does not duplicate days; a holiday HR adds or removes later is reflected when it is rebuilt.
 - Leave balances (LV-008) and alerts (LV-010) use these counts.
-**Open:** Q28 (a half-day application on a Saturday), Q29 (one calendar for all companies and branches).
+- A leave that crosses into the next leave period and includes a Saturday is refused; the employee applies separately for each period (Q33).
+- Only HR Managers and System Managers who are not limited to a company can change the calendar (Q31).
+**Answered (product owner, 2026-11-12):** Q28: any leave on a Saturday, full or half day, counts 0.5. Q29: one calendar serves all companies and branches.
