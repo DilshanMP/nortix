@@ -28,6 +28,8 @@ Standard Frappe HR DocTypes are used as they are. Only the items below are added
 | annual_requires_permanent | Check | 0 | Not built: Permanent status is not required (Q1) |
 | is_medical_allocation_enabled | Check | 0 | LV-007; turned on after the Sheet import (LV-013) |
 | medical_days | Float | 7 | LV-007 |
+| medical_leave_approver | Link User (HR role required) | | LV-007, Q23: receives new medical applications |
+| medical_backup_approvers | Table MultiSelect: Nortix Medical Backup Approver (user) | | LV-007, Q23: may approve when HR is away; must hold Leave Approver or an HR role; HR emailed on each decision |
 | is_balance_alert_enabled | Check | 0 | LV-010 weekly summary |
 | balance_alert_role | Link Role | HR Manager | LV-010 summary recipients; HR roles only (Q26, T12) |
 | is_balance_alert_to_unrestricted | Check | 0 | LV-010; also email users with no company restriction (Q26) |
