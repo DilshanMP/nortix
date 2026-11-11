@@ -41,6 +41,7 @@ flowchart LR
 | T9 | Integrity | Allocation job runs twice and doubles leave | Skip any employee with an allocation for (employee, leave type, period); run lock so a second run stops; Frappe HR rejects overlapping allocations | Double run creates one allocation; run during a held lock creates none |
 | T10 | Tampering | User sets the source field on an allocation or adjustment to suppress an employee's leave or disguise a manual change as automatic | Server rejects `nortix_source` on Leave Allocation and Leave Adjustment unless set by the jobs or the import | HR user cannot set the source through the API on either |
 | T11 | Integrity | An HR adjustment on a casual allocation silently stops, or is overwritten by, the 1-year casual rise | Only the job's own adjustment counts as done; an existing submitted HR adjustment is left alone and the employee is logged for HR review; a draft does not block | HR adjustment reported, not overridden; draft does not block |
+| T12 | Disclosure | The weekly balance email pushes other companies' or other people's balances to a mailbox | Recipient role must be an HR role that reads Leave Allocations (Employee roles refused); each recipient's list follows their own permissions; users without a company restriction excluded unless explicitly allowed; names escaped in the email | Employee role refused; unrestricted user skipped by default; per-recipient isolation and escaping tests |
 
 ## Residual risks
 Shared phones where staff stay logged in: mitigated by session expiry and user guidance; accepted for R1, review at R2.
