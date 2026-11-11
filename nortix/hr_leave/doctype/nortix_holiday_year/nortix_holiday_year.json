@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "autoname": "field:year",
+ "creation": "2026-11-12 04:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "description": "The year's mercantile holidays; saving builds the calendar shared by every company (LV-014). Site-wide configuration, so it has no company field.",
+ "field_order": [
+  "year",
+  "holiday_list",
+  "holidays"
+ ],
+ "fields": [
+  {
+   "fieldname": "year",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Year",
+   "reqd": 1,
+   "unique": 1,
+   "non_negative": 1,
+   "set_only_once": 1,
+   "description": "Calendar year these holidays belong to."
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "Holiday List",
+   "read_only": 1,
+   "description": "Built automatically with every Sunday off, every Saturday as a half day, and the holidays below."
+  },
+  {
+   "fieldname": "holidays",
+   "fieldtype": "Table",
+   "label": "Mercantile Holidays",
+   "options": "Nortix Mercantile Holiday",
+   "description": "Enter the year's gazetted mercantile holidays; Sundays and Saturdays are added automatically."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-12 04:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR Leave",
+ "name": "Nortix Holiday Year",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "System Manager",
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "read": 1,
+   "role": "HR Manager",
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "read": 1,
+   "role": "HR User",
+   "create": 1,
+   "write": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
+  },
+  {
+   "read": 1,
+   "role": "Employee"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "year",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "year",
+ "track_changes": 1
+}
