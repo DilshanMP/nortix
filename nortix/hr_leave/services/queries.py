@@ -67,10 +67,8 @@ def get_employees_with_annual_allocation(
 	return set(rows)
 
 
-def get_rule_allocation(
-	employee: str, leave_type: str, from_date, to_date, source: str
-) -> frappe._dict | None:
-	"""The submitted allocation a leave rule created for this employee and period, if any."""
+def get_allocation_covering(employee: str, leave_type: str, on_date) -> frappe._dict | None:
+	"""The submitted allocation of this leave type that covers `on_date`, whatever created it."""
 	allocation = frappe.qb.DocType("Leave Allocation")
 	rows = (
 		frappe.qb.from_(allocation)
@@ -79,23 +77,19 @@ def get_rule_allocation(
 			(allocation.employee == employee)
 			& (allocation.leave_type == leave_type)
 			& (allocation.docstatus == 1)
-			& (allocation.nortix_source == source)
-			& (allocation.from_date <= to_date)
-			& (allocation.to_date >= from_date)
+			& (allocation.from_date <= on_date)
+			& (allocation.to_date >= on_date)
 		)
 		.limit(1)
 	).run(as_dict=True)
 	return rows[0] if rows else None
 
 
-def has_leave_adjustment(leave_allocation: str) -> bool:
-	"""Whether any Leave Adjustment, in any state, exists for the allocation."""
+def has_adjustment(leave_allocation: str, docstatus: tuple[int, ...], source: str | None = None) -> bool:
+	"""Whether a Leave Adjustment in one of the given states (and, if given, from `source`)
+	exists for the allocation."""
 	adjustment = frappe.qb.DocType("Leave Adjustment")
-	return bool(
-		(
-			frappe.qb.from_(adjustment)
-			.select(adjustment.name)
-			.where(adjustment.leave_allocation == leave_allocation)
-			.limit(1)
-		).run()
-	)
+	condition = (adjustment.leave_allocation == leave_allocation) & adjustment.docstatus.isin(list(docstatus))
+	if source:
+		condition &= adjustment.nortix_source == source
+	return bool((frappe.qb.from_(adjustment).select(adjustment.name).where(condition).limit(1)).run())

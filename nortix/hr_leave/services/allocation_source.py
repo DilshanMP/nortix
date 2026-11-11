@@ -1,4 +1,4 @@
-"""Guard for the `nortix_source` audit field on Leave Allocation (LV-006, LV-013)."""
+"""Guard for the `nortix_source` audit field on Leave Allocation and Leave Adjustment (LV-003 to LV-007, LV-013)."""
 
 from contextlib import contextmanager
 
@@ -30,7 +30,7 @@ def validate_allocation_source(doc, method=None) -> None:
 		return
 	if doc.is_new() or doc.has_value_changed("nortix_source"):
 		frappe.throw(
-			_("Allocation Source is set by the system and cannot be entered."),
+			_("The source field is set by the system and cannot be entered."),
 			frappe.PermissionError,
 			title=_("Not Allowed"),
 		)

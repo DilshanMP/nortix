@@ -130,17 +130,53 @@ class TestNortixLeaveSettings(IntegrationTestCase):
 		self.assertEqual(frappe.db.get_single_value("Nortix Leave Settings", "casual_days_after_mark"), 7)
 
 	def test_enabled_leave_rule_requires_leave_type(self):
-		with self.assertRaises(frappe.ValidationError):
+		with self.assertRaisesRegex(frappe.ValidationError, "before turning on"):
 			set_leave_settings(casual_leave_type=None)
 
+	def test_disabled_leave_rule_allows_missing_leave_type(self):
+		set_leave_settings(is_casual_allocation_enabled=0, casual_leave_type=None)
+
 	def test_medical_leave_type_must_allow_over_allocation(self):
-		with self.assertRaises(frappe.ValidationError):
+		with self.assertRaisesRegex(frappe.ValidationError, "must allow over allocation"):
 			set_leave_settings(medical_leave_type="_Test Nortix No Over Allocation")
 
 	def test_carry_forward_casual_leave_type_rejected(self):
-		with self.assertRaises(frappe.ValidationError):
+		with self.assertRaisesRegex(frappe.ValidationError, "carry-forward"):
 			set_leave_settings(casual_leave_type="_Test Nortix Carry Forward")
 
+	def test_earned_additional_leave_type_rejected(self):
+		with self.assertRaisesRegex(frappe.ValidationError, "carry-forward"):
+			set_leave_settings(additional_leave_type="_Test Nortix Earned")
+
 	def test_negative_leave_rule_amount_rejected(self):
-		with self.assertRaises(frappe.ValidationError):
+		with self.assertRaisesRegex(frappe.ValidationError, "between 0 and"):
 			set_leave_settings(medical_days=-1)
+
+	def test_leave_rule_amount_over_a_year_rejected(self):
+		with self.assertRaisesRegex(frappe.ValidationError, "between 0 and"):
+			set_leave_settings(medical_days=367)
+
+	def test_leave_rule_amount_boundaries_accepted(self):
+		set_leave_settings(medical_days=366, additional_days_before_mark=0)
+		self.assertEqual(frappe.db.get_single_value("Nortix Leave Settings", "medical_days"), 366)
+
+	def test_monthly_casual_amount_capped(self):
+		with self.assertRaisesRegex(frappe.ValidationError, "at most"):
+			set_leave_settings(casual_monthly_days_first_year=31)
+
+	def test_casual_leave_type_maximum_below_after_mark_rejected(self):
+		make_leave_type("_Test Nortix Casual", max_leaves_allowed=6)
+		try:
+			with self.assertRaisesRegex(frappe.ValidationError, "allows at most"):
+				set_leave_settings()
+		finally:
+			make_leave_type("_Test Nortix Casual", max_leaves_allowed=0)
+
+	def test_two_rules_sharing_a_leave_type_rejected(self):
+		with self.assertRaisesRegex(frappe.ValidationError, "same Leave Type"):
+			set_leave_settings(medical_leave_type="_Test Nortix Casual", is_medical_allocation_enabled=1)
+
+	def test_annual_and_rule_sharing_a_leave_type_rejected(self):
+		set_annual_settings()
+		with self.assertRaisesRegex(frappe.ValidationError, "same Leave Type"):
+			set_leave_settings(casual_leave_type=ANNUAL_LEAVE_TYPE)

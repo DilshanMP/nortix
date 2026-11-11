@@ -20,6 +20,7 @@ from nortix.hr_leave.services.leave_rules import (
 )
 
 RUN_LOCK = "nortix_leave_allocation"
+CASUAL_TOP_UP_SOURCE = "casual_rule"
 
 
 @dataclass(frozen=True)
@@ -95,6 +96,39 @@ def validate_leave_settings(settings) -> None:
 			)
 		validate_rule_leave_type(settings, rule)
 
+	# A monthly amount above a year's worth per month cannot be right and would grant
+	# thousands of days in the joining year.
+	if flt(settings.casual_monthly_days_first_year) > MAX_DAYS / 12:
+		frappe.throw(
+			_("{0} must be at most {1} days.").format(
+				_(settings.meta.get_label("casual_monthly_days_first_year")), flt(MAX_DAYS / 12, 2)
+			),
+			title=_("Invalid Leave Days"),
+		)
+
+	# Each rule skips employees who already hold an allocation of its leave type, so two
+	# enabled rules sharing a leave type would silently block one another.
+	enabled = (
+		[("annual_leave_type", settings.annual_leave_type)] if settings.is_annual_allocation_enabled else []
+	)
+	enabled += [
+		(rule.leave_type_field, settings.get(rule.leave_type_field))
+		for rule in RULES
+		if settings.get(rule.switch_field) and settings.get(rule.leave_type_field)
+	]
+	seen = {}
+	for fieldname, leave_type in enabled:
+		if leave_type in seen:
+			frappe.throw(
+				_("{0} and {1} use the same Leave Type {2}; each leave rule needs its own.").format(
+					_(settings.meta.get_label(seen[leave_type])),
+					_(settings.meta.get_label(fieldname)),
+					frappe.bold(leave_type),
+				),
+				title=_("Leave Type Used Twice"),
+			)
+		seen[leave_type] = fieldname
+
 
 def validate_rule_leave_type(settings, rule: LeaveRule) -> None:
 	name = settings.get(rule.leave_type_field)
@@ -144,6 +178,7 @@ def allocate_due_leave(on_date=None) -> dict:
 		"created": [],
 		"adjusted": [],
 		"skipped": [],
+		"needs_review": [],
 		"failed": [],
 		"companies_without_period": [],
 		"periods_not_calendar_year": [],
@@ -154,6 +189,14 @@ def allocate_due_leave(on_date=None) -> dict:
 			_allocate(getdate(on_date), summary)
 	except LockTimeoutError:
 		summary["not_run"].append("already running")
+	if summary["needs_review"]:
+		# The scheduler discards the summary, so HR learns of these employees from the log.
+		frappe.log_error(
+			title="Leave allocation needs review",
+			message="Casual leave could not rise at the 1-year mark because HR already adjusted the "
+			"allocation; review employees: " + ", ".join(sorted(set(summary["needs_review"]))),
+			reference_doctype="Nortix Leave Settings",
+		)
 	return summary
 
 
@@ -268,18 +311,27 @@ def _create_allocation(
 
 
 def _top_up_casual(employee, period, leave_type: str, settings, on_date, summary) -> None:
-	"""LV-004: in the year of the mark, add the difference between the after-mark and
-	before-mark casual amounts on the mark date, once per allocation."""
-	allocation = queries.get_rule_allocation(
-		employee.name, leave_type, period.from_date, period.to_date, "casual_rule"
-	)
-	entitlement = get_casual_entitlement(
-		employee.date_of_joining, period.from_date, period.to_date, on_date, settings
-	)
-	missing = entitlement and allocation and entitlement.days - flt(allocation.total_leaves_allocated)
-	# Any adjustment, even one HR cancelled, means the top-up was already handled.
-	if not missing or missing <= 0 or queries.has_leave_adjustment(allocation.name):
+	"""LV-004: from the mark date in the year of the mark, the casual allocation rises by the
+	difference between the after-mark and before-mark amounts, whatever created the allocation
+	(job, Sheet import or HR). Added once, as a Leave Adjustment posted on the mark date."""
+	mark = get_mark_date(employee.date_of_joining)
+	allocation = queries.get_allocation_covering(employee.name, leave_type, mark)
+	# The rise belongs only to an allocation that started before the mark; one created on or
+	# after the mark already holds the after-mark amount.
+	if not allocation or not (getdate(allocation.from_date) < mark <= on_date):
 		summary["skipped"].append(employee.name)
+		return
+	if queries.has_adjustment(allocation.name, source=CASUAL_TOP_UP_SOURCE, docstatus=(1, 2)):
+		summary["skipped"].append(employee.name)
+		return
+	step = flt(settings.casual_days_after_mark) - flt(settings.casual_days_before_mark)
+	if step <= 0 or flt(allocation.total_leaves_allocated) >= flt(settings.casual_days_after_mark):
+		summary["skipped"].append(employee.name)
+		return
+	# Frappe HR allows one submitted adjustment per allocation, so one made by HR leaves no room
+	# for the rise; HR decides instead of the job overriding or ignoring their change.
+	if queries.has_adjustment(allocation.name, docstatus=(1,)):
+		summary["needs_review"].append(employee.name)
 		return
 
 	adjustment = frappe.get_doc(
@@ -289,11 +341,13 @@ def _top_up_casual(employee, period, leave_type: str, settings, on_date, summary
 			"leave_type": leave_type,
 			"leave_allocation": allocation.name,
 			"adjustment_type": "Allocate",
-			"leaves_to_adjust": missing,
-			"posting_date": max(get_mark_date(employee.date_of_joining), getdate(allocation.from_date)),
+			"leaves_to_adjust": step,
+			"posting_date": mark,
+			"nortix_source": CASUAL_TOP_UP_SOURCE,
 			"reason_for_adjustment": _("Casual leave from the 1-year mark"),
 		}
 	)
-	adjustment.insert()
-	adjustment.submit()
+	with allow_allocation_source():
+		adjustment.insert()
+		adjustment.submit()
 	summary["adjusted"].append(adjustment.name)

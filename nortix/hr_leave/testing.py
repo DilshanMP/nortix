@@ -141,3 +141,43 @@ def set_leave_settings(**values) -> None:
 	)
 	settings.update(values)
 	settings.save()
+
+
+def make_holiday_list_for(company: str, abbr: str) -> str:
+	"""A 2026 holiday list with no holidays, assigned to the company, so leave days count plainly."""
+	from hrms.hr.doctype.holiday_list_assignment.test_holiday_list_assignment import (
+		create_holiday_list_assignment,
+	)
+
+	holiday_list = f"_Test Nortix Holidays {abbr}"
+	if not frappe.db.exists("Holiday List", holiday_list):
+		frappe.get_doc(
+			{
+				"doctype": "Holiday List",
+				"holiday_list_name": holiday_list,
+				"from_date": "2026-01-01",
+				"to_date": "2026-12-31",
+			}
+		).insert()
+	create_holiday_list_assignment(
+		"Company", company, holiday_list=holiday_list, company=company, from_date="2026-01-01"
+	)
+	return holiday_list
+
+
+def take_leave(employee: str, company: str, leave_type: str, from_date: str, to_date: str, status="Approved"):
+	doc = frappe.get_doc(
+		{
+			"doctype": "Leave Application",
+			"employee": employee,
+			"company": company,
+			"leave_type": leave_type,
+			"from_date": from_date,
+			"to_date": to_date,
+			"posting_date": from_date,
+			"status": status,
+		}
+	).insert()
+	if status == "Approved":
+		doc.submit()
+	return doc

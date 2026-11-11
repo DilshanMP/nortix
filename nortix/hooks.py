@@ -163,6 +163,9 @@ doc_events = {
 	"Leave Allocation": {
 		"validate": "nortix.hr_leave.services.allocation_source.validate_allocation_source",
 	},
+	"Leave Adjustment": {
+		"validate": "nortix.hr_leave.services.allocation_source.validate_allocation_source",
+	},
 }
 
 # Scheduled Tasks

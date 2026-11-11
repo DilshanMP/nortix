@@ -67,6 +67,26 @@ class TestCasualEntitlement(UnitTestCase):
 	def test_zero_amount_gives_nothing(self):
 		self.assertIsNone(self.casual("2025-11-01", "2026-03-01", casual_days_before_mark=0))
 
+	def test_29_feb_joiner_rises_on_28_feb(self):
+		def casual_2025(on_date):
+			return as_tuple(
+				get_casual_entitlement("2024-02-29", "2025-01-01", "2025-12-31", on_date, settings())
+			)
+
+		self.assertEqual(casual_2025("2025-02-27")[2], 6)
+		self.assertEqual(casual_2025("2025-02-28")[2], 7)
+
+	def test_mark_on_period_start_gives_7(self):
+		self.assertEqual(
+			as_tuple(
+				get_casual_entitlement("2026-01-01", "2027-01-01", "2027-12-31", "2027-01-01", settings())
+			),
+			("2027-01-01", "2027-12-31", 7),
+		)
+
+	def test_31_dec_joiner_gets_half_day(self):
+		self.assertEqual(self.casual("2026-12-31", "2026-12-31"), ("2026-12-31", PERIOD_TO, 0.5))
+
 
 class TestAdditionalEntitlement(UnitTestCase):
 	"""LV-005: 1 day per period before the mark, usable until the day before the mark."""
@@ -88,6 +108,16 @@ class TestAdditionalEntitlement(UnitTestCase):
 
 	def test_nothing_after_mark_year(self):
 		self.assertIsNone(self.additional("2024-08-10", "2026-01-01"))
+
+	def test_1_jan_joiner_has_whole_year(self):
+		self.assertEqual(self.additional("2026-01-01", "2026-01-01"), (PERIOD_FROM, PERIOD_TO, 1))
+
+	def test_31_dec_joiner_has_one_day_then_until_day_before_mark(self):
+		self.assertEqual(
+			self.additional("2025-12-31", "2025-12-31", "2025-01-01", "2025-12-31"),
+			("2025-12-31", "2025-12-31", 1),
+		)
+		self.assertEqual(self.additional("2025-12-31", "2026-01-01"), (PERIOD_FROM, "2026-12-30", 1))
 
 	def test_29_feb_joiner_ends_27_feb(self):
 		self.assertEqual(
