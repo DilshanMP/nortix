@@ -12,3 +12,4 @@ LV-010,Low and critical alerts,Built,ADR-0004,nortix/hr_leave/services/balance_a
 LV-011,Configurable rules,Confirmed,ADR-0004,,,
 LV-012,Company and branch isolation,Confirmed,ADR-0002,,,
 LV-013,Migration from leave Sheet,Confirmed,docs/04-data/migration-leave-sheet.md,,,
+LV-014,Holiday calendar and Saturday half days,Confirmed,,,,
